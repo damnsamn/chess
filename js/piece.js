@@ -1,13 +1,13 @@
 class Piece {
-    constructor(type, color, gridX, gridY) {
+    constructor(type, side, posX, posY) {
         this.type = type;
-        this.color = color;
-        this.grid = {
-            x: gridX,
-            y: gridY,
-            index0: {
-                x: gridX - 1,
-                y: gridY - 1
+        this.side = side;
+        this.position = {
+            x: posX,
+            y: posY,
+            index: {
+                x: posX - 1,
+                y: posY - 1
             }
         }
         this.glyph = this.setGlyph();
@@ -18,79 +18,69 @@ class Piece {
     }
 
     draw() {
-        strokeWeight(3);
-        let iconSize = squareSize / 2;
+        push();
+        strokeWeight(8);
+        let iconSize = squareSize / 1.5;
         textFont(iconFont, iconSize)
 
-        push();
-        translate((this.grid.index0.x) * squareSize, (this.grid.index0.y) * squareSize);
-        if (turn == "BLACK") {
+        translate((this.position.index.x) * squareSize, (8 - this.position.index.y - 1) * squareSize);
+        if (board.turn == board.sides[1]) {
             translate(squareSize, squareSize);
             rotate(PI);
         }
 
-        fill(this.color == "WHITE" ? 255 : 0);
-        stroke(selectedPiece == this ? darken(colors.blue, 0.75) : (this.color == "BLACK" ? 255 : 0));
+        fill(this.side.color);
+        stroke(selectedPiece == this ? darken(colors.blue, 0.75) : 255 - this.side.color);
         textAlign(CENTER, CENTER)
         text(this.glyph, squareSize / 2, squareSize / 2 - iconSize / 8);
-
-        // fill(this.color == "BLACK" ? 255 : 0);
-        // noStroke();
-        // textAlign(CENTER);
-        // text(this.type, squareSize / 2, squareSize / 2);
         pop();
     }
 
     showAvailableMoves() {
         let piece = this;
 
-        boardLoop(function (x, y) {
-            let moves = piece.getMoves();
-            if (x == moves[0] && y == moves[1]) {
-                push();
-                translate(x * squareSize, y * squareSize);
-                noStroke();
-                fill(255, 0, 0)
-                circle(squareSize / 2, squareSize / 2, 20);
-                pop();
+        let moves = piece.getMoves();
 
-                // console.log(`x: ${x}, y: ${y}, ${moves}`)
-            }
-        })
+        for (let move in moves) {
+            boardLoop(function (x, y) {
+                if (x == move[0] && y == move[1]) {
+                    push();
+                    translate(x * squareSize, y * squareSize);
+                    noStroke();
+                    fill(darken(colors.blue, 0.75))
+                    circle(squareSize / 2, squareSize / 2, 20);
+                    pop();
+
+                    // console.log(`x: ${x}, y: ${y}, ${moves}`)
+                }
+            })
+
+        }
     }
 
-    highlight() {
-        switch (this.type) {
-            case "PAWN":
 
-                break;
-        }
+    highlight() {
+        // Highlight the available moves
     }
 
     getMoves() {
-        switch (this.type) {
-            case "PAWN":
-                return [this.grid.index0.x, this.grid.index0.y - 1];
-            default:
-                console.log(`Error getting moves for ${this}`);
-                return null;
-        }
+        // Get the available moves, set this.availableMoves
     }
 
     setGlyph() {
         switch (this.type) {
             case "PAWN":
-                return "\u{F444}";
+                return "\u{F443}";
             case "ROOK":
-                return "\u{F448}";
+                return "\u{F447}";
             case "KNIGHT":
-                return "\u{F442}";
+                return "\u{F441}";
             case "BISHOP":
-                return "\u{F43b}";
+                return "\u{F43A}";
             case "QUEEN":
-                return "\u{F446}";
+                return "\u{F445}";
             case "KING":
-                return "\u{F440}";
+                return "\u{F43F}";
         }
     }
 }
