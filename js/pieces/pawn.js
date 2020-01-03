@@ -7,7 +7,7 @@ class Pawn extends Piece {
     getMoves() {
         this.moves = [];
 
-        let yDir = board.sides[0] == this.side ? 1 : -1;
+        let yDir = board.sides[0].name == this.side.name ? 1 : -1;
         let yStep = this.position.index.y + yDir;
 
         // Forward
@@ -19,11 +19,11 @@ class Pawn extends Piece {
             this.moves.push({ x: this.position.index.x, y: yStep + yDir });
 
         // Capture Left
-        if (board.checkPositionIsOccupied(this.position.index.x - 1, yStep) && board.state[this.position.index.x - 1][yStep].side != this.side)
+        if (board.checkPositionIsOccupied(this.position.index.x - 1, yStep) && board.state[this.position.index.x - 1][yStep].side.name != this.side.name)
             this.moves.push({ x: this.position.index.x - 1, y: yStep });
 
         // Capture Right
-        if (board.checkPositionIsOccupied(this.position.index.x + 1, yStep) && board.state[this.position.index.x + 1][yStep].side != this.side)
+        if (board.checkPositionIsOccupied(this.position.index.x + 1, yStep) && board.state[this.position.index.x + 1][yStep].side.name != this.side.name)
             this.moves.push({ x: this.position.index.x + 1, y: yStep });
     }
 

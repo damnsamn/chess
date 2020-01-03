@@ -27,7 +27,7 @@ class Piece {
         textFont(iconFont, iconSize)
 
         translate((this.position.index.x) * squareSize, (8 - this.position.index.y - 1) * squareSize);
-        if (board.turn == board.sides[1]) {
+        if (player.view == board.sides[1].name) {
             translate(squareSize, squareSize);
             rotate(PI);
         }

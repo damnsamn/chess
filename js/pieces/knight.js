@@ -29,7 +29,7 @@ class Knight extends Piece {
     }
 
     checkEmptyOrEnemy(x, y) {
-        if (board.state[x] !== undefined && board.state[x][y] !== undefined && (!board.checkPositionIsOccupied(x, y) || (board.checkPositionIsOccupied(x, y) && board.state[x][y].side != this.side)))
+        if (board.state[x] !== undefined && board.state[x][y] !== undefined && (!board.checkPositionIsOccupied(x, y) || (board.checkPositionIsOccupied(x, y) && board.state[x][y].side.name != this.side.name)))
             if (board.state[x][y] !== undefined)
                 this.moves.push({ x: x, y: y });
     }

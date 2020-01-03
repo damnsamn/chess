@@ -24,7 +24,7 @@ class Rook extends Piece {
         for (let x = start; max == 0 ? x >= 0 : x <= max; max == 0 ? x-- : x++) {
             if (board.state[x][this.position.index.y] === null)
                 this.moves.push({ x: x, y: this.position.index.y })
-            else if (board.state[x][this.position.index.y].side != this.side) {
+            else if (board.state[x][this.position.index.y].side.name != this.side.name) {
                 this.moves.push({ x: x, y: this.position.index.y })
                 break;
             } else
@@ -36,7 +36,7 @@ class Rook extends Piece {
         for (let y = start; max == 0 ? y >= 0 : y <= max; max == 0 ? y-- : y++) {
             if (board.state[this.position.index.x][y] === null)
                 this.moves.push({ x: this.position.index.x, y: y })
-            else if (board.state[this.position.index.x][y].side != this.side) {
+            else if (board.state[this.position.index.x][y].side.name != this.side.name) {
                 this.moves.push({ x: this.position.index.x, y: y })
                 break;
             } else

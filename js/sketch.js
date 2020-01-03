@@ -1,19 +1,14 @@
-// Global Variables
-var w = 800;
-var h = 800;
-var boardSize = 600;
-var marginX = (w - boardSize) / 2;
-var marginY = (h - boardSize) / 2;
-var squareSize = boardSize / 8;
-var bg = 10;
-var piece, selectedPiece;
-var gridMouse = {};
-var iconFont;
-var turn;
+var selectedPiece;
+var colors = {};
+var player = {
+    gridMouse: {},
+    selectedPiece: null,
+    view: null
+}
 
 var board = new Board();
 
-var whiteSide = new Side(255);
+var whiteSide = new Side("White", 255);
 whiteSide.definePieces({
     pawn1: new Pawn(whiteSide, A, 2),
     pawn2: new Pawn(whiteSide, B, 2),
@@ -34,7 +29,7 @@ whiteSide.definePieces({
     rook2: new Rook(whiteSide, H, 1)
 });
 
-var blackSide = new Side(0);
+var blackSide = new Side("Black", 0);
 blackSide.definePieces({
     pawn1: new Pawn(blackSide, A, 7),
     pawn2: new Pawn(blackSide, B, 7),
@@ -54,16 +49,10 @@ blackSide.definePieces({
     knight2: new Knight(blackSide, G, 8),
     rook2: new Rook(blackSide, H, 8)
 });
-board.turn = board.sides[0];
-
-console.log(board)
-
-
-var colors = {
-}
+player.view = board.sides[0].name;
 
 function preload() {
-    iconFont = loadFont('/assets/fa-solid-900.ttf');
+    iconFont = loadFont(iconFontPath);
 }
 
 function setup() {
@@ -73,13 +62,16 @@ function setup() {
         red: color("#d60b0b"),
         blue: color("#43ace6")
     }
+
+    console.log(board);
+    console.log(player);
 }
 
 function draw() {
     background(255);
     translate(marginX, marginY)
 
-    if (board.turn == board.sides[1]) {
+    if (player.view == board.sides[1].name) {
         push();
         translate(width - marginX * 2, height - marginY * 2);
         rotate(PI);
@@ -96,7 +88,7 @@ function draw() {
     if (selectedPiece)
         selectedPiece.showAvailableMoves();
 
-    if (board.turn == board.sides[1]) {
+    if (player.view == board.sides[1].name) {
         pop();
     }
 
@@ -113,7 +105,7 @@ function mouseClicked() {
     let selection = selectedPiece;
     selectPieceAtMouse();
     if (selection)
-        selection.moveTo(gridMouse.x, gridMouse.y);
+        selection.moveTo(player.gridMouse.x, player.gridMouse.y);
 
 }
 
@@ -123,14 +115,14 @@ function mouseReleased() {
 function keyPressed() {
     if (keyCode == 32)
         changeTurn();
-    console.log(board.turn)
+    console.log(player.view)
 }
 
 function changeTurn() {
-    if (board.turn == board.sides[0])
-        board.turn = board.sides[1]
-    else if (board.turn == board.sides[1])
-        board.turn = board.sides[0]
+    if (player.view == board.sides[0].name)
+        player.view = board.sides[1].name
+    else if (player.view == board.sides[1].name)
+        player.view = board.sides[0].name
 }
 
 // TODO: Add Board argument
@@ -145,30 +137,30 @@ function boardLoop(fn) {
 }
 
 function mouseGrid() {
-    if (board.turn == board.sides[0]) {
-        gridMouse.x = ceil((mouseX - marginX) / squareSize);
-        gridMouse.y = 8 - ceil((mouseY - marginY) / squareSize) + 1;
+    if (player.view == board.sides[0].name) {
+        player.gridMouse.x = ceil((mouseX - marginX) / squareSize);
+        player.gridMouse.y = 8 - ceil((mouseY - marginY) / squareSize) + 1;
     }
-    else if (board.turn == board.sides[1]) {
-        gridMouse.x = ceil((boardSize - (mouseX - marginX)) / squareSize);
-        gridMouse.y = 8 - ceil((boardSize - (mouseY - marginY)) / squareSize) + 1;
+    else if (player.view == board.sides[1].name) {
+        player.gridMouse.x = ceil((boardSize - (mouseX - marginX)) / squareSize);
+        player.gridMouse.y = 8 - ceil((boardSize - (mouseY - marginY)) / squareSize) + 1;
     }
 
-    console.log(`[${colChar(gridMouse.x)}, ${gridMouse.y}]`);
+    console.log(`[${colChar(player.gridMouse.x)}, ${player.gridMouse.y}]`);
 
-    // if (gridMouse.x > 0 && gridMouse.x <= 8 && gridMouse.y > 0 && gridMouse.y <= 8) {
+    // if (player.gridMouse.x > 0 && player.gridMouse.x <= 8 && player.gridMouse.y > 0 && player.gridMouse.y <= 8) {
     //     let c = colors.blue;
     //     c.setAlpha(50)
     //     fill(c);
     //     c.setAlpha(225);
     //     stroke(c);
-    //     rect((gridMouse.x - 1) * squareSize, (8 - gridMouse.y) * squareSize, squareSize, squareSize);
+    //     rect((player.gridMouse.x - 1) * squareSize, (8 - player.gridMouse.y) * squareSize, squareSize, squareSize);
     //     noStroke();
     // }
 }
 
 function selectPieceAtMouse() {
-    let selection = board.state[gridMouse.x - 1][gridMouse.y - 1];
+    let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
     if (selection == selectedPiece)
         selection = selectedPiece = null;
     selectedPiece = selection;
@@ -201,5 +193,4 @@ function getSideAtCoordinate(col, row) {
         return boardPointer.side;
     else
         return false;
-
 }

@@ -54,7 +54,7 @@ class Board {
                     case H:
                         translate(squareSize * 1.25, squareSize / 2);
                 }
-                if (board.turn == board.sides[1])
+                if (player.view == board.sides[1].name)
                     rotate(PI);
 
                 text(`${y}`, 0, 0);
@@ -68,7 +68,7 @@ class Board {
                     case 8:
                         translate(squareSize / 2, -squareSize / 4);
                 }
-                if (board.turn == board.sides[1])
+                if (player.view == board.sides[1].name)
                     rotate(PI);
 
                 text(`${colChar(x)}`, 0, 0);

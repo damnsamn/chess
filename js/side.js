@@ -1,5 +1,6 @@
 class Side {
-    constructor(c) {
+    constructor(name, c) {
+        this.name = name;
         this.color = c;
     }
 
@@ -12,11 +13,4 @@ class Side {
             board.state[piece.position.index.x][piece.position.index.y] = piece;
         }
     }
-
-    // draw() {
-    //     let pieces = Object.entries(this.pieces)
-    //     for (let piece of pieces) {
-    //         piece[1].draw();
-    //     }
-    // }
 }
