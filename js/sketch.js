@@ -15,44 +15,44 @@ var board = new Board();
 
 var whiteSide = new Side(255);
 whiteSide.definePieces({
-    pawn1: new Piece("PAWN", whiteSide, A, 2),
-    pawn2: new Piece("PAWN", whiteSide, B, 2),
-    pawn3: new Piece("PAWN", whiteSide, C, 2),
-    pawn4: new Piece("PAWN", whiteSide, D, 2),
-    pawn5: new Piece("PAWN", whiteSide, E, 2),
-    pawn6: new Piece("PAWN", whiteSide, F, 2),
-    pawn7: new Piece("PAWN", whiteSide, G, 2),
-    pawn8: new Piece("PAWN", whiteSide, H, 2),
+    pawn1: new Pawn(whiteSide, A, 2),
+    pawn2: new Pawn(whiteSide, B, 2),
+    pawn3: new Pawn(whiteSide, C, 2),
+    pawn4: new Pawn(whiteSide, D, 2),
+    pawn5: new Pawn(whiteSide, E, 2),
+    pawn6: new Pawn(whiteSide, F, 2),
+    pawn7: new Pawn(whiteSide, G, 2),
+    pawn8: new Pawn(whiteSide, H, 2),
 
-    rook1: new Piece("ROOK", whiteSide, A, 1),
+    rook1: new Rook(whiteSide, A, 1),
     knight1: new Piece("KNIGHT", whiteSide, B, 1),
     bishop1: new Piece("BISHOP", whiteSide, C, 1),
     queen: new Piece("QUEEN", whiteSide, D, 1),
     king: new Piece("KING", whiteSide, E, 1),
     bishop2: new Piece("BISHOP", whiteSide, F, 1),
     knight2: new Piece("KNIGHT", whiteSide, G, 1),
-    rook2: new Piece("ROOK", whiteSide, H, 1)
+    rook2: new Rook(whiteSide, H, 1)
 });
 
 var blackSide = new Side(0);
 blackSide.definePieces({
-    pawn1: new Piece("PAWN", blackSide, A, 7),
-    pawn2: new Piece("PAWN", blackSide, B, 7),
-    pawn3: new Piece("PAWN", blackSide, C, 7),
-    pawn4: new Piece("PAWN", blackSide, D, 7),
-    pawn5: new Piece("PAWN", blackSide, E, 7),
-    pawn6: new Piece("PAWN", blackSide, F, 7),
-    pawn7: new Piece("PAWN", blackSide, G, 7),
-    pawn8: new Piece("PAWN", blackSide, H, 7),
+    pawn1: new Pawn(blackSide, A, 7),
+    pawn2: new Pawn(blackSide, B, 7),
+    pawn3: new Pawn(blackSide, C, 7),
+    pawn4: new Pawn(blackSide, D, 7),
+    pawn5: new Pawn(blackSide, E, 7),
+    pawn6: new Pawn(blackSide, F, 7),
+    pawn7: new Pawn(blackSide, G, 7),
+    pawn8: new Pawn(blackSide, H, 7),
 
-    rook1: new Piece("ROOK", blackSide, A, 8),
+    rook1: new Rook(blackSide, A, 8),
     knight1: new Piece("KNIGHT", blackSide, B, 8),
     bishop1: new Piece("BISHOP", blackSide, C, 8),
     queen: new Piece("QUEEN", blackSide, D, 8),
     king: new Piece("KING", blackSide, E, 8),
     bishop2: new Piece("BISHOP", blackSide, F, 8),
     knight2: new Piece("KNIGHT", blackSide, G, 8),
-    rook2: new Piece("ROOK", blackSide, H, 8)
+    rook2: new Rook(blackSide, H, 8)
 });
 board.turn = board.sides[0];
 
@@ -83,9 +83,10 @@ function draw() {
 
     board.drawBoard();
     mouseGrid();
+    board.drawPieces();
 
-    for (side of board.sides)
-        side.draw();
+    // for (side of board.sides)
+    //     side.draw();
 
     if (selectedPiece)
         selectedPiece.showAvailableMoves();
@@ -104,6 +105,8 @@ function mousePressed() {
 }
 
 function mouseClicked() {
+    if (selectedPiece)
+        selectedPiece.moveTo(gridMouse.x, gridMouse.y);
     selectPieceAtMouse();
 }
 
@@ -158,15 +161,11 @@ function mouseGrid() {
 }
 
 function selectPieceAtMouse() {
-    console.log(selectedPiece);
-    let pieces = Object.entries(whiteSide.pieces);
-    let selection;
-    for (let piece of pieces) {
-        piece = piece[1];
-        if (piece.position.x == gridMouse.x && piece.position.y == gridMouse.y)
-            selection = piece;
-    }
+    let selection = board.state[gridMouse.x - 1][gridMouse.y - 1];
     selectedPiece = selection;
+    if (selection)
+        selectedPiece.getMoves();
+    console.log(selectedPiece);
 }
 function darken(c, s) {
     s = constrain(s, 0, 1);
@@ -180,9 +179,18 @@ function darken(c, s) {
 function getPieceAtCoordinate(col, row) {
     // eg col: A, row: 1
     // for all pieces, return piece that matches gridX==col and gridY==row
-    let piece;
-    if (piece.gridX == col && piece.gridX == row)
-        return piece;
+    let boardPointer = board.state[col - 1][row - 1];
+    if (boardPointer != null)
+        return boardPointer;
     else
         return false;
+}
+
+function getSideAtCoordinate(col, row) {
+    let boardPointer = board.state[col - 1][row - 1];
+    if (boardPointer != null)
+        return boardPointer.side;
+    else
+        return false;
+
 }

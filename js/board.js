@@ -74,5 +74,31 @@ class Board {
         rect(-marginX, -marginY, boardSize + marginX * 2, boardSize + marginY * 2);
     }
 
+    drawPieces() {
+        for (let x of board.state)
+            for (let piece of x)
+                if (piece)
+                    piece.draw();
+
+    }
+
+    addSide(side) {
+        this.sides.push(side);
+
+        if (side == this.sides[1]) {
+            this.sides[1].enemy = this.sides[0];
+            this.sides[0].enemy = this.sides[1];
+        }
+
+    }
+
+
+    checkPosition(x, y) {
+        if (board.state[x] && board.state[x][y])
+            return true;
+        else
+            return false;
+    }
+
 
 }

@@ -5,18 +5,18 @@ class Side {
 
     definePieces(obj) {
         this.pieces = obj;
-        board.sides.push(this);
+        board.addSide(this);
 
         let pieces = Object.values(obj)
         for (let piece of pieces) {
-            board.state[piece.position.index.y][piece.position.index.x] = piece;
+            board.state[piece.position.index.x][piece.position.index.y] = piece;
         }
     }
 
-    draw() {
-        let pieces = Object.entries(this.pieces)
-        for (let piece of pieces) {
-            piece[1].draw();
-        }
-    }
+    // draw() {
+    //     let pieces = Object.entries(this.pieces)
+    //     for (let piece of pieces) {
+    //         piece[1].draw();
+    //     }
+    // }
 }

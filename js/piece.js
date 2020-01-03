@@ -11,6 +11,7 @@ class Piece {
             }
         }
         this.glyph = this.setGlyph();
+        this.moved = false;
     }
 
     validate() {
@@ -19,7 +20,7 @@ class Piece {
 
     draw() {
         push();
-        strokeWeight(8);
+        strokeWeight(6);
         let iconSize = squareSize / 1.5;
         textFont(iconFont, iconSize)
 
@@ -37,34 +38,46 @@ class Piece {
     }
 
     showAvailableMoves() {
-        let piece = this;
 
-        let moves = piece.getMoves();
+        if (this.moves) {
+            let moves = Object.values(this.moves)
+            for (let move of moves) {
+                push();
+                translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
+                noStroke();
+                fill(darken(colors.blue, 0.75))
+                circle(squareSize / 2, squareSize / 2, 20);
+                pop();
 
-        for (let move in moves) {
-            boardLoop(function (x, y) {
-                if (x == move[0] && y == move[1]) {
-                    push();
-                    translate(x * squareSize, y * squareSize);
-                    noStroke();
-                    fill(darken(colors.blue, 0.75))
-                    circle(squareSize / 2, squareSize / 2, 20);
-                    pop();
+                // console.log(`x: ${x}, y: ${y}, ${moves}`)
 
-                    // console.log(`x: ${x}, y: ${y}, ${moves}`)
-                }
-            })
-
+            }
         }
     }
 
 
-    highlight() {
-        // Highlight the available moves
+    getMoves() {
+
     }
 
-    getMoves() {
-        // Get the available moves, set this.availableMoves
+    moveTo(col, row) {
+        let moves = Object.values(this.moves)
+        for (let move of moves) {
+            if (col == move.x + 1 && row == move.y + 1) {
+
+                this.moved = true;
+                board.state[this.position.index.x][this.position.index.y] = null;
+
+                this.position.x = col;
+                this.position.index.x = col - 1;
+                this.position.y = row;
+                this.position.index.y = row - 1;
+
+                board.state[this.position.index.x][this.position.index.y] = null;
+                board.state[this.position.index.x][this.position.index.y] = this;
+
+            }
+        }
     }
 
     setGlyph() {
