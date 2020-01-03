@@ -169,6 +169,8 @@ function mouseGrid() {
 
 function selectPieceAtMouse() {
     let selection = board.state[gridMouse.x - 1][gridMouse.y - 1];
+    if (selection == selectedPiece)
+        selection = selectedPiece = null;
     selectedPiece = selection;
     if (selection)
         selectedPiece.getMoves();
