@@ -25,12 +25,12 @@ whiteSide.definePieces({
     pawn8: new Pawn(whiteSide, H, 2),
 
     rook1: new Rook(whiteSide, A, 1),
-    knight1: new Piece("KNIGHT", whiteSide, B, 1),
+    knight1: new Knight(whiteSide, B, 1),
     bishop1: new Piece("BISHOP", whiteSide, C, 1),
     queen: new Piece("QUEEN", whiteSide, D, 1),
     king: new Piece("KING", whiteSide, E, 1),
     bishop2: new Piece("BISHOP", whiteSide, F, 1),
-    knight2: new Piece("KNIGHT", whiteSide, G, 1),
+    knight2: new Knight(whiteSide, G, 1),
     rook2: new Rook(whiteSide, H, 1)
 });
 
@@ -46,12 +46,12 @@ blackSide.definePieces({
     pawn8: new Pawn(blackSide, H, 7),
 
     rook1: new Rook(blackSide, A, 8),
-    knight1: new Piece("KNIGHT", blackSide, B, 8),
+    knight1: new Knight(blackSide, B, 8),
     bishop1: new Piece("BISHOP", blackSide, C, 8),
     queen: new Piece("QUEEN", blackSide, D, 8),
     king: new Piece("KING", blackSide, E, 8),
     bishop2: new Piece("BISHOP", blackSide, F, 8),
-    knight2: new Piece("KNIGHT", blackSide, G, 8),
+    knight2: new Knight(blackSide, G, 8),
     rook2: new Rook(blackSide, H, 8)
 });
 board.turn = board.sides[0];
@@ -59,7 +59,8 @@ board.turn = board.sides[0];
 console.log(board)
 
 
-var colors = {}
+var colors = {
+}
 
 function preload() {
     iconFont = loadFont('/assets/fa-solid-900.ttf');
@@ -68,7 +69,10 @@ function preload() {
 function setup() {
     createCanvas(w, h);
 
-    colors.blue = color(67, 172, 230);
+    colors = {
+        red: color("#d60b0b"),
+        blue: color("#43ace6")
+    }
 }
 
 function draw() {

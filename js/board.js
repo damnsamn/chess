@@ -93,7 +93,7 @@ class Board {
     }
 
 
-    checkPosition(x, y) {
+    checkPositionIsOccupied(x, y) {
         if (board.state[x] && board.state[x][y])
             return true;
         else

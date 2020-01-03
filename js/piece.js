@@ -42,10 +42,11 @@ class Piece {
         if (this.moves) {
             let moves = Object.values(this.moves)
             for (let move of moves) {
+                let c = board.state[move.x][move.y] == null ? colors.blue : colors.red;
                 push();
                 translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
                 noStroke();
-                fill(darken(colors.blue, 0.75))
+                fill(darken(c, 0.75))
                 circle(squareSize / 2, squareSize / 2, 20);
                 pop();
 
