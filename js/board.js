@@ -12,6 +12,7 @@ class Board {
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null]
         ];
+        this.lastMove = [];
     }
 
     drawBoard() {
@@ -27,6 +28,16 @@ class Board {
                 fill(board.sides[1].color);
 
             rect(0, 0, squareSize, squareSize);
+
+            if (board.lastMove.length && board.lastMove[1].position.x == x && board.lastMove[1].position.y == y) {
+                let c = color(colors.blue);
+                c.setAlpha(100);
+                fill(c);
+                rect(0, 0, squareSize, squareSize);
+
+            }
+
+
 
             fill(board.sides[1].color);
 

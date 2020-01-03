@@ -19,6 +19,8 @@ class Piece {
     }
 
     draw() {
+        let fillColor = color(this.side.color);
+        let strokeColor = color(this.side.enemy.color);
         push();
         strokeWeight(6);
         let iconSize = squareSize / 1.5;
@@ -29,10 +31,15 @@ class Piece {
             translate(squareSize, squareSize);
             rotate(PI);
         }
-
-        fill(this.side.color);
-        stroke(selectedPiece == this ? darken(colors.blue, 0.75) : 255 - this.side.color);
         textAlign(CENTER, CENTER)
+
+        stroke(selectedPiece == this ? darken(colors.blue, 0.75) : strokeColor);
+        if (board.lastMove[0] == this) {
+            fillColor = colors.blue;
+            fillColor.setAlpha(125);
+            noStroke()
+        }
+        fill(fillColor);
         text(this.glyph, squareSize / 2, squareSize / 2 - iconSize / 8);
         pop();
     }
@@ -66,7 +73,9 @@ class Piece {
         for (let move of moves) {
             if (col == move.x + 1 && row == move.y + 1) {
 
+                board.lastMove = [new Piece(this.type, this.side, this.position.x, this.position.y)];
                 this.moved = true;
+
                 board.state[this.position.index.x][this.position.index.y] = null;
 
                 this.position.x = col;
@@ -77,6 +86,8 @@ class Piece {
                 board.state[this.position.index.x][this.position.index.y] = null;
                 board.state[this.position.index.x][this.position.index.y] = this;
 
+                board.lastMove.push(this);
+                selectedPiece = null;
             }
         }
     }

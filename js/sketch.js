@@ -89,8 +89,9 @@ function draw() {
     mouseGrid();
     board.drawPieces();
 
-    // for (side of board.sides)
-    //     side.draw();
+    if (board.lastMove.length)
+        board.lastMove[0].draw();
+
 
     if (selectedPiece)
         selectedPiece.showAvailableMoves();
@@ -109,9 +110,11 @@ function mousePressed() {
 }
 
 function mouseClicked() {
-    if (selectedPiece)
-        selectedPiece.moveTo(gridMouse.x, gridMouse.y);
+    let selection = selectedPiece;
     selectPieceAtMouse();
+    if (selection)
+        selection.moveTo(gridMouse.x, gridMouse.y);
+
 }
 
 function mouseReleased() {
@@ -153,15 +156,15 @@ function mouseGrid() {
 
     console.log(`[${colChar(gridMouse.x)}, ${gridMouse.y}]`);
 
-    if (gridMouse.x > 0 && gridMouse.x <= 8 && gridMouse.y > 0 && gridMouse.y <= 8) {
-        let c = colors.blue;
-        c.setAlpha(50)
-        fill(c);
-        c.setAlpha(225);
-        stroke(c);
-        rect((gridMouse.x - 1) * squareSize, (8 - gridMouse.y) * squareSize, squareSize, squareSize);
-        noStroke();
-    }
+    // if (gridMouse.x > 0 && gridMouse.x <= 8 && gridMouse.y > 0 && gridMouse.y <= 8) {
+    //     let c = colors.blue;
+    //     c.setAlpha(50)
+    //     fill(c);
+    //     c.setAlpha(225);
+    //     stroke(c);
+    //     rect((gridMouse.x - 1) * squareSize, (8 - gridMouse.y) * squareSize, squareSize, squareSize);
+    //     noStroke();
+    // }
 }
 
 function selectPieceAtMouse() {
