@@ -24,7 +24,7 @@ function setup() {
     console.log(board);
     console.log(player);
 
-    DBData.remove();
+    // DBData.remove();
     DBData.on('value', data => { if (data.val()) { console.table('incoming data:'); console.log(data.val()); board.updateData(data.val()) } }, err => console.log(err));
 }
 
