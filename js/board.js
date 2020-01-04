@@ -1,18 +1,18 @@
 class Board {
     constructor() {
         this.sides = [];
-        this.turn = null;
+        this.turn = Null;
         this.state = [
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null]
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null],
+            [Null, Null, Null, Null, Null, Null, Null, Null]
         ];
-        this.lastMove = [];
+        this.lastMove = Null;
     }
 
     drawBoard() {
@@ -97,8 +97,8 @@ class Board {
         this.sides.push(side);
 
         if (side == this.sides[1]) {
-            this.sides[1].enemy = this.sides[0];
-            this.sides[0].enemy = this.sides[1];
+            this.sides[0].createEnemy(this.sides[1]);
+            this.sides[1].createEnemy(this.sides[0]);
         }
 
     }
@@ -109,6 +109,52 @@ class Board {
             return true;
         else
             return false;
+    }
+
+    updateData(data) {
+        for (let [key, value] of Object.entries(data))
+            switch (key) {
+                case "lastMove":
+                    this[key] = [];
+                    for (let val of value) {
+                        this[key].push(new Piece(val.type, val.side, val.position.x, val.position.y));
+                        // console.log(this[key]);
+                    }
+                    break;
+                case "sides":
+                    this[key] = value;
+                    // for (let val of value) {
+                    //     this[key].push(new Piece(val.type, val.side, val.position.x, val.position.y));
+                    //     console.log(this[key]);
+                    // }
+                    break;
+                case "state":
+                    this[key] = [];
+                    for (let [index, array] of Object.entries(value)) {
+                        this[key].push([]);
+                        for (let i = 0; i < array.length; i++) {
+                            if (array[i])
+                                switch (array[i].type) {
+                                    case "PAWN":
+                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                    case "ROOK":
+                                        this[key][index].push(new Rook(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                    case "KNIGHT":
+                                        this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+
+                                    default:
+                                        this[key][index].push(new Piece(array[i].type, array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                }
+                            else
+                                this[key][index].push(Null)
+                        }
+                    }
+                    break;
+            }
     }
 
 

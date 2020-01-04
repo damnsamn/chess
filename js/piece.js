@@ -14,13 +14,9 @@ class Piece {
         this.moved = false;
     }
 
-    validate() {
-
-    }
-
     draw() {
-        let fillColor = color(this.side.color);
-        let strokeColor = color(this.side.enemy.color);
+        let fillColor = color(this.side.color | "#ff0000");
+        let strokeColor = color(this.side.enemy ? this.side.enemy.color : "#ff0000");
         push();
         strokeWeight(6);
         let iconSize = squareSize / 1.5;
@@ -33,7 +29,7 @@ class Piece {
         }
         textAlign(CENTER, CENTER)
 
-        stroke(selectedPiece == this ? darken(colors.blue, 0.75) : strokeColor);
+        stroke(player.selectedPiece == this ? darken(colors.blue, 0.75) : strokeColor);
         if (board.lastMove[0] == this) {
             fillColor = colors.blue;
             fillColor.setAlpha(125);
@@ -49,7 +45,7 @@ class Piece {
         if (this.moves) {
             let moves = Object.values(this.moves)
             for (let move of moves) {
-                let c = board.state[move.x][move.y] == null ? colors.blue : colors.red;
+                let c = board.state[move.x][move.y] == Null ? colors.blue : colors.red;
                 push();
                 translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
                 noStroke();
@@ -70,24 +66,30 @@ class Piece {
 
     moveTo(col, row) {
         let moves = Object.values(this.moves)
+        // debugger;
         for (let move of moves) {
             if (col == move.x + 1 && row == move.y + 1) {
-
                 board.lastMove = [new Piece(this.type, this.side, this.position.x, this.position.y)];
                 this.moved = true;
 
-                board.state[this.position.index.x][this.position.index.y] = null;
+                console.log(board.state[this.position.index.x]);
+                board.state[this.position.index.x][this.position.index.y] = Null;
+                console.log(board.state)
 
                 this.position.x = col;
                 this.position.index.x = col - 1;
                 this.position.y = row;
                 this.position.index.y = row - 1;
 
-                board.state[this.position.index.x][this.position.index.y] = null;
+                board.state[this.position.index.x][this.position.index.y] = Null;
                 board.state[this.position.index.x][this.position.index.y] = this;
 
                 board.lastMove.push(this);
-                selectedPiece = null;
+                player.selectedPiece = Null;
+
+                console.log("sending data:")
+                console.log(board)
+                DBData.set(board);
             }
         }
     }

@@ -10,3 +10,11 @@ function colChar(int) {
         case 8: return "H";
     }
 }
+
+function createArray(len, itm) {
+    var arr = [];
+    while (len > 0) {
+        arr.push(itm); len--;
+    }
+    return arr;
+}

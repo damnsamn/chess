@@ -8,6 +8,8 @@ const F = 6;
 const G = 7;
 const H = 8;
 
+const Null = "";
+
 // Global Constants
 const w = 800;
 const h = 800;

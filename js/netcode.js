@@ -1,5 +1,5 @@
- // Your web app's Firebase configuration
- var firebaseConfig = {
+// Your web app's Firebase configuration
+var firebaseConfig = {
     apiKey: "AIzaSyApPkggzWG7E7zErkItwf8CpvFUKgcYwuQ",
     authDomain: "chess-6ca3d.firebaseapp.com",
     databaseURL: "https://chess-6ca3d.firebaseio.com",
@@ -10,3 +10,5 @@
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+var DBData = firebase.database().ref('chessData');
