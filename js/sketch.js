@@ -4,6 +4,7 @@ var player = {
     selectedPiece: null,
     view: null
 }
+var loaded;
 var incomingData;
 var board;
 
@@ -25,7 +26,7 @@ function setup() {
     console.log(player);
 
     // DBData.remove();
-    DBData.on('value', data => { if (data.val()) { console.table('incoming data:'); console.log(data.val()); board.updateData(data.val()) } }, err => console.log(err));
+    DBData.on('value', data => { if (data.val()) { console.table('incoming data:'); console.log(data.val()); board.updateData(data.val()); loaded = true; } }, err => console.log(err));
 }
 
 function draw() {
@@ -40,7 +41,8 @@ function draw() {
 
     board.drawBoard();
     mouseGrid();
-    board.drawPieces();
+    if (loaded)
+        board.drawPieces();
 
     if (board.lastMove.length)
         board.lastMove[0].draw();
