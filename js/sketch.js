@@ -25,7 +25,7 @@ function setup() {
     console.log(player);
 
     DBData.remove();
-    DBData.on('value', data => { console.table('incoming data:'); if (data.val()) { console.log(data.val()); board.updateData(data.val()) } }, err => console.log(err));
+    DBData.on('value', data => { if (data.val()) { console.table('incoming data:'); console.log(data.val()); board.updateData(data.val()) } }, err => console.log(err));
 }
 
 function draw() {
@@ -65,7 +65,7 @@ function mousePressed() {
 function mouseClicked() {
     let selection = player.selectedPiece;
     selectPieceAtMouse();
-    if (selection)
+    if (selection && selection.moves.length)
         selection.moveTo(player.gridMouse.x, player.gridMouse.y);
 
 }
@@ -177,10 +177,10 @@ function initialiseBoard() {
 
         rook1: new Rook(whiteSide, A, 1),
         knight1: new Knight(whiteSide, B, 1),
-        bishop1: new Piece("BISHOP", whiteSide, C, 1),
+        bishop1: new Bishop(whiteSide, C, 1),
         queen: new Piece("QUEEN", whiteSide, D, 1),
         king: new Piece("KING", whiteSide, E, 1),
-        bishop2: new Piece("BISHOP", whiteSide, F, 1),
+        bishop2: new Bishop(whiteSide, F, 1),
         knight2: new Knight(whiteSide, G, 1),
         rook2: new Rook(whiteSide, H, 1)
     });
@@ -198,10 +198,10 @@ function initialiseBoard() {
 
         rook1: new Rook(blackSide, A, 8),
         knight1: new Knight(blackSide, B, 8),
-        bishop1: new Piece("BISHOP", blackSide, C, 8),
+        bishop1: new Bishop(blackSide, C, 8),
         queen: new Piece("QUEEN", blackSide, D, 8),
         king: new Piece("KING", blackSide, E, 8),
-        bishop2: new Piece("BISHOP", blackSide, F, 8),
+        bishop2: new Bishop(blackSide, F, 8),
         knight2: new Knight(blackSide, G, 8),
         rook2: new Rook(blackSide, H, 8)
     });

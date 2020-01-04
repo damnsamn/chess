@@ -23,9 +23,9 @@ class Board {
 
             // Set alternating colors
             if ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0))
-                fill(board.sides[0].color);
-            else
                 fill(board.sides[1].color);
+            else
+                fill(board.sides[0].color);
 
             rect(0, 0, squareSize, squareSize);
 
@@ -143,6 +143,15 @@ class Board {
                                         break;
                                     case "KNIGHT":
                                         this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                    case "BISHOP":
+                                        this[key][index].push(new Bishop(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                    case "QUEEN":
+                                        this[key][index].push(new Queen(array[i].side, array[i].position.x, array[i].position.y))
+                                        break;
+                                    case "KING":
+                                        this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y))
                                         break;
 
                                     default:

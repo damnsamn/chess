@@ -11,6 +11,7 @@ class Piece {
             }
         }
         this.glyph = this.setGlyph();
+        this.moves = [];
         this.moved = false;
     }
 
@@ -92,6 +93,26 @@ class Piece {
                 DBData.set(board);
             }
         }
+    }
+
+    checkLoop(incrementX, incrementY, n) {
+        let newX = this.position.index.x + incrementX;
+        let newY = this.position.index.y + incrementY;
+
+        // if n, only loop n times - else loop until we hit array bounds
+        for (let i = 0; n ? i < n : i < board.state.length; i++)
+            if (newX >= 0 && newX < board.state.length && newY >= 0 && newY < board.state.length) {
+                let newPos = board.state[newX][newY];
+
+                if (newPos === Null && newPos !== undefined) {
+                    this.moves.push({ x: newX, y: newY })
+                    newX += incrementX;
+                    newY += incrementY;
+                } else if (newPos && newPos.side.name != this.side.name) {
+                    this.moves.push({ x: newX, y: newY });
+                    break;
+                }
+            }
     }
 
     setGlyph() {
