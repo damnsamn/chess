@@ -1,3 +1,4 @@
+var bg = null;
 var colors = {};
 var player = {
     gridMouse: {},
@@ -18,7 +19,7 @@ function setup() {
     createCanvas(w, h);
 
     colors = {
-        red: color("#d60b0b"),
+        red: color("#bd2d2d"),
         blue: color("#43ace6")
     }
 
@@ -30,7 +31,8 @@ function setup() {
 }
 
 function draw() {
-    background(255);
+    if (bg)
+        background(bg);
     translate(marginX, marginY)
 
     if (player.view == board.sides[1].name) {
@@ -43,9 +45,6 @@ function draw() {
     mouseGrid();
     if (loaded)
         board.drawPieces();
-
-    if (board.lastMove.length)
-        board.lastMove[0].draw();
 
 
     if (player.selectedPiece)
@@ -62,10 +61,12 @@ function draw() {
 
 // Input Events
 function mousePressed() {
-    let selection = player.selectedPiece;
-    selectPieceAtMouse();
-    if (selection && selection.moves.length)
-        selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+        let selection = player.selectedPiece;
+        selectPieceAtMouse();
+        if (selection && selection.moves.length)
+            selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+    }
 }
 
 function mouseClicked() {
@@ -163,6 +164,7 @@ function getSideAtCoordinate(col, row) {
 }
 
 function resetBoard() {
+    DBData.remove();
     initialiseBoard();
     console.log("sending data:")
     console.log(board)
@@ -172,7 +174,7 @@ function resetBoard() {
 function initialiseBoard() {
     board = new Board(true);
 
-    var whiteSide = new Side("White", 255);
+    var whiteSide = new Side("White", "#EEEEEE");
     whiteSide.definePieces([
         new Pawn(whiteSide, A, 2),
         new Pawn(whiteSide, B, 2),
@@ -192,7 +194,7 @@ function initialiseBoard() {
         new Rook(whiteSide, H, 1)
     ]);
 
-    var blackSide = new Side("Black", 0);
+    var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
         new Pawn(blackSide, A, 7),
         new Pawn(blackSide, B, 7),

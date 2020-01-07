@@ -16,29 +16,27 @@ class Piece {
     }
 
     draw() {
-        let fillColor = color(this.side.color | "#ff0000");
+        let fillColor = color(this.side.color || "#ff0000");
         let strokeColor = color(this.side.enemy ? this.side.enemy.color : "#ff0000");
         push();
-        strokeWeight(6);
-        let iconSize = squareSize / 1.5;
-        textFont(iconFont, iconSize)
+        this.setupGlyphStyle();
 
         translate((this.position.index.x) * squareSize, (8 - this.position.index.y - 1) * squareSize);
         if (player.view == board.sides[1].name) {
             translate(squareSize, squareSize);
             rotate(PI);
         }
-        textAlign(CENTER, CENTER)
 
         stroke(player.selectedPiece == this ? darken(colors.blue, 0.75) : strokeColor);
-        if (board.lastMove[0] == this) {
-            fillColor = colors.blue;
-            fillColor.setAlpha(125);
-            noStroke()
-        }
         fill(fillColor);
         text(this.glyph, squareSize / 2, squareSize / 2 - iconSize / 8);
         pop();
+    }
+
+    setupGlyphStyle() {
+        strokeWeight(6);
+        textFont(iconFont, iconSize)
+        textAlign(CENTER, CENTER)
     }
 
     showAvailableMoves() {
@@ -49,8 +47,10 @@ class Piece {
                 let c = board.state[move.x][move.y] == Null ? colors.blue : colors.red;
                 push();
                 translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
+
                 noStroke();
-                fill(darken(c, 0.75))
+                c.setAlpha(150)
+                fill(c)
                 circle(squareSize / 2, squareSize / 2, 20);
                 pop();
 
@@ -58,6 +58,10 @@ class Piece {
 
             }
         }
+    }
+
+    addMove(row, col) {
+        this.moves.push({ x: row, y: col });
     }
 
 
@@ -140,7 +144,7 @@ class Piece {
         this.loopIncrement(
             incrementX,
             incrementY,
-            (x, y) => { this.moves.push({ x: x, y: y }) },
+            (x, y) => { this.addMove(x, y) },
             n
         );
     }

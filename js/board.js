@@ -17,6 +17,8 @@ class Board {
     }
 
     drawBoard() {
+        bg = color(this.sides[1].color);
+        select("body").style("background", bg)
         noStroke();
         boardLoop(function (x, y) {
             push();
@@ -30,9 +32,9 @@ class Board {
 
             rect(0, 0, squareSize, squareSize);
 
-            if (board.lastMove.length && board.lastMove[1].position.x == x && board.lastMove[1].position.y == y) {
+            if (board.lastMove.length && ((board.lastMove[1].position.x == x && board.lastMove[1].position.y == y) || (board.lastMove[0].position.x == x && board.lastMove[0].position.y == y))) {
                 let c = color(colors.blue);
-                c.setAlpha(100);
+                c.setAlpha(75);
                 fill(c);
                 rect(0, 0, squareSize, squareSize);
 
@@ -40,7 +42,7 @@ class Board {
 
 
 
-            fill(board.sides[1].color);
+            fill(board.sides[0].color);
 
             textStyle(BOLD);
             textAlign(CENTER, CENTER);
@@ -85,14 +87,14 @@ class Board {
         }
         textStyle(BOLD);
         textAlign(CENTER, CENTER);
-        fill(board.sides[1].color);
+        fill(board.sides[0].color);
         text(`Current turn: ${board.turn.name}`, boardSize / 2, -50)
         pop();
 
         // Draw Borders
         strokeWeight(1);
         noFill();
-        stroke(0);
+        stroke(board.sides[0].color);
         rect(0, 0, boardSize, boardSize);
         rect(-marginX, -marginY, boardSize + marginX * 2, boardSize + marginY * 2);
     }
@@ -109,6 +111,7 @@ class Board {
         this.sides.push(side);
 
         if (side == this.sides[1]) {
+            // When there are two sides, run the following
             this.sides[0].createEnemy(this.sides[1]);
             this.sides[1].createEnemy(this.sides[0]);
             this.turn = this.sides[0];
