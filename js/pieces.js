@@ -171,7 +171,8 @@ class King extends Piece {
             for (let move of piece.moves)
                 if (move.x == this.position.index.x && move.y == this.position.index.y)
                     this.checkedBy.push(piece);
-        board.check = this.checkedBy.length ? this : false;
+        if (!board.check)
+            board.check = this.checkedBy.length ? this : false;
     }
 
     getPotentialAttackers() {
@@ -180,7 +181,7 @@ class King extends Piece {
             for (var y = -1; y <= 1; y++) {
                 this.loopIncrement(x, y, (posX, posY) => {
                     let statePos = board.state[posX][posY];
-                    if (statePos != Null && statePos.side.name != this.side.name)
+                    if (statePos != Null && statePos.side.name != this.side.name && statePos.type != this.type)
                         this.potentialAttackers.push(statePos);
                 })
 

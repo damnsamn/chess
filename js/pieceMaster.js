@@ -106,6 +106,9 @@ class Piece {
                 for (let king of getPiecesOfType("KING"))
                     king.checkLoop();
 
+                // Change turn
+                board.turn = this.side.enemy;
+
                 console.log("sending data:")
                 console.log(board)
                 DBData.set(board);

@@ -78,6 +78,17 @@ class Board {
             pop();
         })
 
+        push();
+        if (player.view == board.sides[1].name) {
+            translate(boardSize, boardSize);
+            rotate(PI);
+        }
+        textStyle(BOLD);
+        textAlign(CENTER, CENTER);
+        fill(board.sides[1].color);
+        text(`Current turn: ${board.turn.name}`, boardSize / 2, -50)
+        pop();
+
         // Draw Borders
         strokeWeight(1);
         noFill();
@@ -100,6 +111,8 @@ class Board {
         if (side == this.sides[1]) {
             this.sides[0].createEnemy(this.sides[1]);
             this.sides[1].createEnemy(this.sides[0]);
+            this.turn = this.sides[0];
+            player.side = this.sides[0];
         }
 
     }

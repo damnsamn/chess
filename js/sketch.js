@@ -62,14 +62,13 @@ function draw() {
 
 // Input Events
 function mousePressed() {
-}
-
-function mouseClicked() {
     let selection = player.selectedPiece;
     selectPieceAtMouse();
     if (selection && selection.moves.length)
         selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+}
 
+function mouseClicked() {
 }
 
 function mouseReleased() {
@@ -77,18 +76,14 @@ function mouseReleased() {
 
 function keyPressed() {
     if (keyCode == 32) {
-        changeTurn();
-        console.log(player.view)
+        changeView();
     }
     if (keyCode == 27) {
-        initialiseBoard();
-        console.log("sending data:")
-        console.log(board)
-        DBData.set(board);
+        resetBoard();
     }
 }
 
-function changeTurn() {
+function changeView() {
     if (player.view == board.sides[0].name)
         player.view = board.sides[1].name
     else if (player.view == board.sides[1].name)
@@ -165,6 +160,13 @@ function getSideAtCoordinate(col, row) {
         return boardPointer.side;
     else
         return false;
+}
+
+function resetBoard() {
+    initialiseBoard();
+    console.log("sending data:")
+    console.log(board)
+    DBData.set(board);
 }
 
 function initialiseBoard() {
