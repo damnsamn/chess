@@ -1,5 +1,5 @@
 class Piece {
-    constructor(type, side, posX, posY) {
+    constructor(type, side, posX, posY, moved = false) {
         this.type = type;
         this.side = side;
         this.position = {
@@ -12,7 +12,7 @@ class Piece {
         }
         this.glyph = this.setGlyph();
         this.moves = [];
-        this.moved = false;
+        this.moved = moved;
     }
 
     draw() {
@@ -66,27 +66,33 @@ class Piece {
     }
 
     moveTo(col, row) {
-        let moves = Object.values(this.moves)
-        // debugger;
+        let moves = Object.values(this.moves);
+
+        // Check col,row correspond to an existing move in this.moves
         for (let move of moves) {
             if (col == move.x + 1 && row == move.y + 1) {
+                // Add lastMove ghost
                 board.lastMove = [new Piece(this.type, this.side, this.position.x, this.position.y)];
+
                 this.moved = true;
 
-                console.log(board.state[this.position.index.x]);
+                // Set current state position to Null
                 board.state[this.position.index.x][this.position.index.y] = Null;
-                console.log(board.state)
 
+                // Change Piece's position coords
                 this.position.x = col;
                 this.position.index.x = col - 1;
                 this.position.y = row;
                 this.position.index.y = row - 1;
 
+                // Change state destination to this
                 board.state[this.position.index.x][this.position.index.y] = Null;
                 board.state[this.position.index.x][this.position.index.y] = this;
 
                 board.lastMove.push(this);
                 player.selectedPiece = Null;
+
+
 
                 console.log("sending data:")
                 console.log(board)
@@ -95,7 +101,7 @@ class Piece {
         }
     }
 
-    checkLoop(incrementX, incrementY, n) {
+    moveLoop(incrementX, incrementY, n) {
         let newX = this.position.index.x + incrementX;
         let newY = this.position.index.y + incrementY;
 

@@ -136,26 +136,31 @@ class Board {
                             if (array[i])
                                 switch (array[i].type) {
                                     case "PAWN":
-                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
+
                                     case "ROOK":
-                                        this[key][index].push(new Rook(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Rook(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
+
                                     case "KNIGHT":
-                                        this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
+
                                     case "BISHOP":
-                                        this[key][index].push(new Bishop(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Bishop(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
+
                                     case "QUEEN":
-                                        this[key][index].push(new Queen(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Queen(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
+
                                     case "KING":
-                                        this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
 
                                     default:
-                                        this[key][index].push(new Piece(array[i].type, array[i].side, array[i].position.x, array[i].position.y))
+                                        this[key][index].push(new Piece(array[i].type, array[i].side, array[i].position.x, array[i].position.y, array[i].moved));
                                         break;
                                 }
                             else

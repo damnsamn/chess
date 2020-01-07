@@ -1,6 +1,6 @@
 class Pawn extends Piece {
-    constructor(side, gridX, gridY) {
-        super("PAWN", side, gridX, gridY);
+    constructor(side, gridX, gridY, moved = false) {
+        super("PAWN", side, gridX, gridY, moved);
     }
 
     getMoves() {
@@ -38,13 +38,13 @@ class Rook extends Piece {
         this.moves = [];
 
         // left
-        this.checkLoop(-1, 0);
+        this.moveLoop(-1, 0);
         // right
-        this.checkLoop(1, 0);
+        this.moveLoop(1, 0);
         // up
-        this.checkLoop(0, 1);
+        this.moveLoop(0, 1);
         // down
-        this.checkLoop(0, -1);
+        this.moveLoop(0, -1);
 
     }
 }
@@ -59,31 +59,31 @@ class Knight extends Piece {
 
         // Top-Left
         // this.checkEmptyOrEnemy(this.position.index.x - 1, this.position.index.y + 2);
-        this.checkLoop(-1, 2, 1);
+        this.moveLoop(-1, 2, 1);
         // Top-Right
         // this.checkEmptyOrEnemy(this.position.index.x + 1, this.position.index.y + 2);
-        this.checkLoop(1, 2, 1);
+        this.moveLoop(1, 2, 1);
 
         // Right-Top
         // this.checkEmptyOrEnemy(this.position.index.x + 2, this.position.index.y + 1);
-        this.checkLoop(2, 1, 1);
+        this.moveLoop(2, 1, 1);
         // Right-Bottom
         // this.checkEmptyOrEnemy(this.position.index.x + 2, this.position.index.y - 1);
-        this.checkLoop(2, -1, 1);
+        this.moveLoop(2, -1, 1);
 
         // Bottom-Left
         // this.checkEmptyOrEnemy(this.position.index.x + 1, this.position.index.y - 2);
-        this.checkLoop(-1, -2, 1);
+        this.moveLoop(-1, -2, 1);
         // Bottom-Right
         // this.checkEmptyOrEnemy(this.position.index.x - 1, this.position.index.y - 2);
-        this.checkLoop(1, -2, 1);
+        this.moveLoop(1, -2, 1);
 
         // Left-Top
         // this.checkEmptyOrEnemy(this.position.index.x - 2, this.position.index.y + 1);
-        this.checkLoop(-2, 1, 1);
+        this.moveLoop(-2, 1, 1);
         // Left-Bottom
         // this.checkEmptyOrEnemy(this.position.index.x - 2, this.position.index.y - 1);
-        this.checkLoop(-2, -1, 1);
+        this.moveLoop(-2, -1, 1);
     }
 }
 
@@ -96,13 +96,13 @@ class Bishop extends Piece {
         this.moves = [];
 
         // up, right
-        this.checkLoop(1, 1);
+        this.moveLoop(1, 1);
         // up, left
-        this.checkLoop(-1, 1);
+        this.moveLoop(-1, 1);
         // down, right
-        this.checkLoop(1, -1);
+        this.moveLoop(1, -1);
         // down, left
-        this.checkLoop(-1, -1);
+        this.moveLoop(-1, -1);
     }
 }
 
@@ -115,21 +115,21 @@ class Queen extends Piece {
         this.moves = [];
 
         // up
-        this.checkLoop(0, 1);
+        this.moveLoop(0, 1);
         // up, right
-        this.checkLoop(1, 1);
+        this.moveLoop(1, 1);
         // right
-        this.checkLoop(1, 0);
+        this.moveLoop(1, 0);
         // down, right
-        this.checkLoop(1, -1);
+        this.moveLoop(1, -1);
         // down
-        this.checkLoop(0, -1);
+        this.moveLoop(0, -1);
         // down, left
-        this.checkLoop(-1, -1);
+        this.moveLoop(-1, -1);
         // left
-        this.checkLoop(-1, 0);
+        this.moveLoop(-1, 0);
         // up, left
-        this.checkLoop(-1, 1);
+        this.moveLoop(-1, 1);
     }
 }
 
@@ -142,20 +142,20 @@ class King extends Piece {
         this.moves = [];
 
         // up
-        this.checkLoop(0, 1, 1);
+        this.moveLoop(0, 1, 1);
         // up, right
-        this.checkLoop(1, 1, 1);
+        this.moveLoop(1, 1, 1);
         // right
-        this.checkLoop(1, 0, 1);
+        this.moveLoop(1, 0, 1);
         // down, right
-        this.checkLoop(1, -1, 1);
+        this.moveLoop(1, -1, 1);
         // down
-        this.checkLoop(0, -1, 1);
+        this.moveLoop(0, -1, 1);
         // down, left
-        this.checkLoop(-1, -1, 1);
+        this.moveLoop(-1, -1, 1);
         // left
-        this.checkLoop(-1, 0, 1);
+        this.moveLoop(-1, 0, 1);
         // up, left
-        this.checkLoop(-1, 1, 1);
+        this.moveLoop(-1, 1, 1);
     }
 }
