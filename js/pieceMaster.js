@@ -1,5 +1,5 @@
 class Piece {
-    constructor(type, side, posX, posY, moved = false) {
+    constructor(type, side, posX, posY, moves = [], moved = false) {
         this.type = type;
         this.side = side;
         this.position = {
@@ -11,7 +11,7 @@ class Piece {
             }
         }
         this.glyph = this.setGlyph();
-        this.moves = [];
+        this.moves = moves;
         this.moved = moved;
     }
 
@@ -92,7 +92,7 @@ class Piece {
                 board.lastMove.push(this);
                 player.selectedPiece = Null;
 
-
+                boardLoop((x, y) => { if (board.state[x-1][y-1] !== Null) board.state[x-1][y-1].getMoves(); });
 
                 console.log("sending data:")
                 console.log(board)

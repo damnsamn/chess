@@ -1,6 +1,6 @@
 class Pawn extends Piece {
-    constructor(side, gridX, gridY, moved = false) {
-        super("PAWN", side, gridX, gridY, moved);
+    constructor(side, gridX, gridY, moves = [], moved = false) {
+        super("PAWN", side, gridX, gridY, moves, moved);
     }
 
     getMoves() {
@@ -30,8 +30,8 @@ class Pawn extends Piece {
 }
 
 class Rook extends Piece {
-    constructor(side, gridX, gridY) {
-        super("ROOK", side, gridX, gridY);
+    constructor(side, gridX, gridY, moves = []) {
+        super("ROOK", side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -50,8 +50,8 @@ class Rook extends Piece {
 }
 
 class Knight extends Piece {
-    constructor(side, gridX, gridY) {
-        super("KNIGHT", side, gridX, gridY);
+    constructor(side, gridX, gridY, moves = []) {
+        super("KNIGHT", side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -88,8 +88,8 @@ class Knight extends Piece {
 }
 
 class Bishop extends Piece {
-    constructor(side, gridX, gridY) {
-        super("BISHOP", side, gridX, gridY);
+    constructor(side, gridX, gridY, moves = []) {
+        super("BISHOP", side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -107,8 +107,8 @@ class Bishop extends Piece {
 }
 
 class Queen extends Piece {
-    constructor(side, gridX, gridY) {
-        super("QUEEN", side, gridX, gridY);
+    constructor(side, gridX, gridY, moves = []) {
+        super("QUEEN", side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -134,8 +134,8 @@ class Queen extends Piece {
 }
 
 class King extends Piece {
-    constructor(side, gridX, gridY) {
-        super("KING", side, gridX, gridY);
+    constructor(side, gridX, gridY, moves = []) {
+        super("KING", side, gridX, gridY, moves);
     }
 
     getMoves() {

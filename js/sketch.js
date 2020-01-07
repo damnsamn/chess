@@ -132,8 +132,6 @@ function selectPieceAtMouse() {
     if (selection == player.selectedPiece)
         selection = player.selectedPiece = null;
     player.selectedPiece = selection;
-    if (selection)
-        player.selectedPiece.getMoves();
     console.log(player.selectedPiece);
 }
 function darken(c, s) {
