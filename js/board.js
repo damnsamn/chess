@@ -1,5 +1,5 @@
 class Board {
-    constructor() {
+    constructor(isFirstMove = false) {
         this.sides = [];
         this.turn = Null;
         this.state = [
@@ -12,6 +12,7 @@ class Board {
             [Null, Null, Null, Null, Null, Null, Null, Null],
             [Null, Null, Null, Null, Null, Null, Null, Null]
         ];
+        this.isFirstMove = isFirstMove;
         this.lastMove = Null;
     }
 
@@ -118,15 +119,7 @@ class Board {
                     this[key] = [];
                     for (let val of value) {
                         this[key].push(new Piece(val.type, val.side, val.position.x, val.position.y));
-                        // console.log(this[key]);
                     }
-                    break;
-                case "sides":
-                    this[key] = value;
-                    // for (let val of value) {
-                    //     this[key].push(new Piece(val.type, val.side, val.position.x, val.position.y));
-                    //     console.log(this[key]);
-                    // }
                     break;
                 case "state":
                     this[key] = [];
@@ -156,7 +149,7 @@ class Board {
                                         break;
 
                                     case "KING":
-                                        this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
+                                        this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved, array[i].potentialAttackers));
                                         break;
 
                                     default:
@@ -168,8 +161,14 @@ class Board {
                         }
                     }
                     break;
-            }
-    }
 
+                default:
+                    this[key] = value;
+                    break;
+            }
+
+        // call getMoves() for every piece
+        boardLoop((x, y) => { if (board.state[x - 1][y - 1] !== Null) board.state[x - 1][y - 1].getMoves(); });
+    }
 
 }

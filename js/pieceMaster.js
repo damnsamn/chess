@@ -65,6 +65,10 @@ class Piece {
 
     }
 
+    checkBreakingMoves() {
+
+    }
+
     moveTo(col, row) {
         let moves = Object.values(this.moves);
 
@@ -89,10 +93,18 @@ class Piece {
                 board.state[this.position.index.x][this.position.index.y] = Null;
                 board.state[this.position.index.x][this.position.index.y] = this;
 
+                // show *which* piece last moved
                 board.lastMove.push(this);
+
+                // Deselect on move
                 player.selectedPiece = Null;
 
-                boardLoop((x, y) => { if (board.state[x-1][y-1] !== Null) board.state[x-1][y-1].getMoves(); });
+                if (board.isFirstMove)
+                    board.isFirstMove = false;
+
+                // Perform checkLoop() for each King
+                for (let king of getPiecesOfType("KING"))
+                    king.checkLoop();
 
                 console.log("sending data:")
                 console.log(board)
@@ -101,7 +113,7 @@ class Piece {
         }
     }
 
-    moveLoop(incrementX, incrementY, n) {
+    loopIncrement(incrementX, incrementY, loopFunction, n = 0) {
         let newX = this.position.index.x + incrementX;
         let newY = this.position.index.y + incrementY;
 
@@ -111,14 +123,23 @@ class Piece {
                 let newPos = board.state[newX][newY];
 
                 if (newPos === Null && newPos !== undefined) {
-                    this.moves.push({ x: newX, y: newY })
+                    loopFunction(newX, newY);
                     newX += incrementX;
                     newY += incrementY;
                 } else if (newPos && newPos.side.name != this.side.name) {
-                    this.moves.push({ x: newX, y: newY });
+                    loopFunction(newX, newY);
                     break;
                 }
             }
+    }
+
+    moveLoop(incrementX, incrementY, n) {
+        this.loopIncrement(
+            incrementX,
+            incrementY,
+            (x, y) => { this.moves.push({ x: x, y: y }) },
+            n
+        );
     }
 
     setGlyph() {

@@ -134,8 +134,9 @@ class Queen extends Piece {
 }
 
 class King extends Piece {
-    constructor(side, gridX, gridY, moves = []) {
+    constructor(side, gridX, gridY, moves = [], potentialAttackers = []) {
         super("KING", side, gridX, gridY, moves);
+        this.potentialAttackers = potentialAttackers;
     }
 
     getMoves() {
@@ -157,5 +158,33 @@ class King extends Piece {
         this.moveLoop(-1, 0, 1);
         // up, left
         this.moveLoop(-1, 1, 1);
+
+        this.checkLoop();
     }
+
+    checkLoop() {
+        this.getPotentialAttackers();
+
+
+        this.checkedBy = [];
+        for (let piece of this.potentialAttackers)
+            for (let move of piece.moves)
+                if (move.x == this.position.index.x && move.y == this.position.index.y)
+                    this.checkedBy.push(piece);
+        board.check = this.checkedBy.length ? this : false;
+    }
+
+    getPotentialAttackers() {
+        this.potentialAttackers = [];
+        for (var x = -1; x <= 1; x++)
+            for (var y = -1; y <= 1; y++) {
+                this.loopIncrement(x, y, (posX, posY) => {
+                    let statePos = board.state[posX][posY];
+                    if (statePos != Null && statePos.side.name != this.side.name)
+                        this.potentialAttackers.push(statePos);
+                })
+
+            }
+    }
+
 }

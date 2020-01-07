@@ -4,11 +4,11 @@ class Side {
         this.color = c;
     }
 
-    definePieces(obj) {
+    definePieces(array) {
         board.addSide(this);
 
-        let pieces = Object.values(obj)
-        for (let piece of pieces) {
+        // let pieces = Object.values(obj)
+        for (let piece of array) {
             board.state[piece.position.index.x][piece.position.index.y] = piece;
         }
     }
