@@ -1,6 +1,7 @@
 var bg = null;
 var colors = {};
 var player = {
+    side: null,
     gridMouse: {},
     selectedPiece: null,
     view: null
@@ -33,39 +34,86 @@ function setup() {
 function draw() {
     if (bg)
         background(bg);
+    noFill();
+    strokeWeight(1);
+    stroke(board.sides[0].color);
+    rect(0, 0, boardSize + marginX * 2, boardSize + marginY * 2);
+
     translate(marginX, marginY)
+    select("body").style("background", bg);
 
-    if (player.view == board.sides[1].name) {
-        push();
-        translate(width - marginX * 2, height - marginY * 2);
-        rotate(PI);
+    if (player.side) {
+        if (player.view == board.sides[1].name) {
+            push();
+            translate(width - marginX * 2, height - marginY * 2);
+            rotate(PI);
+        }
+        board.drawBoard();
+        mouseGrid();
+        if (loaded)
+            board.drawPieces();
+        if (player.selectedPiece)
+            player.selectedPiece.showAvailableMoves();
+
+        if (player.view == board.sides[1].name) {
+            pop();
+        }
+    } else {
+        if (board.sides.length == 2) {
+            push();
+            let white = board.sides[0].color;
+            let black = board.sides[1].color;
+
+            fill(white);
+            noStroke();
+            textSize(30);
+            textAlign(CENTER, TOP);
+            text("WHO DO YOU SERVE?", boardSize / 2, boardSize / 2 - squareSize * 1.5)
+
+
+            setupGlyphStyle(squareSize);
+
+            fill(white);
+            stroke(black);
+            text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
+
+            fill(black);
+            stroke(white);
+            text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
+
+            pop();
+        }
+
     }
-
-    board.drawBoard();
-    mouseGrid();
-    if (loaded)
-        board.drawPieces();
-
-
-    if (player.selectedPiece)
-        player.selectedPiece.showAvailableMoves();
-
-    if (player.view == board.sides[1].name) {
-        pop();
-    }
-
-    fill(255, 0, 0);
-    circle(0, 0, 5);
 }
 
 
 // Input Events
 function mousePressed() {
     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-        let selection = player.selectedPiece;
-        selectPieceAtMouse();
-        if (selection && selection.moves.length)
-            selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+        if (player.side) {
+            let selection = player.selectedPiece;
+            selectPieceAtMouse();
+            if (selection && selection.moves.length)
+                selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+        } else {
+            let whiteX = boardSize / 2 - (squareSize * 1.5);
+            let blackX = boardSize / 2 + (squareSize * 0.5);
+            let iconY = boardSize / 2 - (squareSize * 0.5);
+            let iconW = squareSize;
+            let iconH = squareSize * 1.25;
+
+            console.log(`mouseX: ${mouseX}`);
+            console.log(`mouseY: ${mouseY}`);
+
+            // TODO: Select a side
+
+            if (mouseX > marginX + whiteX && mouseX < whiteX + iconW && mouseY > marginY + iconY && mouseY < iconH)
+                player.side = board.sides[0];
+
+            if (mouseX > marginX + blackX && mouseX < blackX + iconW && mouseY > marginY + iconY && mouseY < iconH)
+                player.side = board.sides[1];
+        }
     }
 }
 
@@ -214,4 +262,10 @@ function initialiseBoard() {
         new Rook(blackSide, H, 8)
     ]);
     player.view = board.sides[0].name;
+}
+
+function setupGlyphStyle(size = iconSize) {
+    strokeWeight(6);
+    textFont(iconFont, size)
+    textAlign(CENTER, CENTER)
 }

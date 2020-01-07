@@ -17,8 +17,6 @@ class Board {
     }
 
     drawBoard() {
-        bg = color(this.sides[1].color);
-        select("body").style("background", bg)
         noStroke();
         boardLoop(function (x, y) {
             push();
@@ -115,7 +113,7 @@ class Board {
             this.sides[0].createEnemy(this.sides[1]);
             this.sides[1].createEnemy(this.sides[0]);
             this.turn = this.sides[0];
-            player.side = this.sides[0];
+            bg = this.sides[1].color;
         }
 
     }

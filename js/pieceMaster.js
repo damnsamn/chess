@@ -19,7 +19,7 @@ class Piece {
         let fillColor = color(this.side.color || "#ff0000");
         let strokeColor = color(this.side.enemy ? this.side.enemy.color : "#ff0000");
         push();
-        this.setupGlyphStyle();
+        setupGlyphStyle();
 
         translate((this.position.index.x) * squareSize, (8 - this.position.index.y - 1) * squareSize);
         if (player.view == board.sides[1].name) {
@@ -31,12 +31,6 @@ class Piece {
         fill(fillColor);
         text(this.glyph, squareSize / 2, squareSize / 2 - iconSize / 8);
         pop();
-    }
-
-    setupGlyphStyle() {
-        strokeWeight(6);
-        textFont(iconFont, iconSize)
-        textAlign(CENTER, CENTER)
     }
 
     showAvailableMoves() {
@@ -152,17 +146,17 @@ class Piece {
     setGlyph() {
         switch (this.type) {
             case "PAWN":
-                return "\u{F443}";
+                return glyphs.pawn;
             case "ROOK":
-                return "\u{F447}";
+                return glyphs.rook;
             case "KNIGHT":
-                return "\u{F441}";
+                return glyphs.knight;
             case "BISHOP":
-                return "\u{F43A}";
+                return glyphs.bishop;
             case "QUEEN":
-                return "\u{F445}";
+                return glyphs.queen;
             case "KING":
-                return "\u{F43F}";
+                return glyphs.king;
         }
     }
 }
