@@ -1,5 +1,6 @@
 class Board {
     constructor(isFirstMove = false) {
+        this.players = [];
         this.sides = [];
         this.turn = Null;
         this.state = [
@@ -96,7 +97,37 @@ class Board {
         textStyle(BOLD);
         textAlign(CENTER, CENTER);
         fill(board.sides[0].color);
-        text(`Current turn: ${board.turn.name}`, boardSize / 2, -50)
+        text(`Current turn: ${board.turn.name}`, boardSize / 2, -50);
+
+        let statusIconSize = 16;
+        let circleSize = 12;
+        setupGlyphStyle(statusIconSize);
+
+        text(glyphs.king, -marginX / 1.5, -marginY / 1.5);
+        strokeWeight(1.5);
+        if (checkPlayerByName(board.sides[0].name)) {
+            fill(colors.green);
+            stroke(colors.green);
+        } else {
+            fill(bg);
+            stroke(255, 255, 255, 100);
+        }
+        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4, circleSize);
+
+        fill(board.sides[1].color);
+        stroke(board.sides[0].color);
+        text(glyphs.king, -marginX / 1.5, -marginY / 1.5 + statusIconSize * 1.5);
+        if (checkPlayerByName(board.sides[1].name)) {
+            fill(colors.green);
+            stroke(colors.green);
+        } else {
+            fill(bg);
+            stroke(255, 255, 255, 100);
+        }
+        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4 + statusIconSize * 1.5, circleSize);
+
+
+
         pop();
 
         // Draw Borders

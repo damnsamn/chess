@@ -11,4 +11,5 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-var DBData = firebase.database().ref('chessData');
+var boardData = firebase.database().ref('chessData');
+var playerData = firebase.database().ref('players');

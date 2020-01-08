@@ -10,6 +10,7 @@ var loaded;
 var incomingData;
 var board;
 var fontIcon, fontText;
+var players = [];
 
 initialiseBoard();
 
@@ -23,15 +24,32 @@ function setup() {
 
     colors = {
         red: color("#bd2d2d"),
-        blue: color("#43ace6")
+        blue: color("#43ace6"),
+        green: color("#4a962c")
     }
     textFont(fontText);
 
-    console.log(board);
-    console.log(player);
-
-    // DBData.remove();
-    DBData.on('value', data => { if (data.val()) { console.table('incoming data:'); console.log(data.val()); board.updateData(data.val()); loaded = true; } }, err => console.log(err));
+    boardData.on('value',
+        data => {
+            if (data.val()) {
+                console.table('incoming boardData:');
+                console.log(data.val());
+                board.updateData(data.val());
+                loaded = true;
+            }
+        },
+        err => console.log(err)
+    );
+    playerData.on('value',
+        data => {
+            if (data.val()) {
+                console.table('incoming playerData:');
+                console.log(data.val());
+                updatePlayers(data.val());
+            }
+        },
+        err => console.log(err)
+    );
 }
 
 function draw() {
@@ -45,49 +63,53 @@ function draw() {
     translate(marginX, marginY)
     select("body").style("background", bg);
 
-    if (player.side) {
-        if (player.view == board.sides[1].name) {
-            push();
-            translate(width - marginX * 2, height - marginY * 2);
-            rotate(PI);
-        }
-        board.drawBoard();
-        mouseGrid();
-        if (loaded)
+    if (loaded)
+        if (player.side) {
+            if (player.view == board.sides[1].name) {
+                push();
+                translate(width - marginX * 2, height - marginY * 2);
+                rotate(PI);
+            }
+            board.drawBoard();
+            mouseGrid();
             board.drawPieces();
-        if (player.selectedPiece)
-            player.selectedPiece.showAvailableMoves();
+            if (player.selectedPiece)
+                player.selectedPiece.showAvailableMoves();
 
-        if (player.view == board.sides[1].name) {
-            pop();
+            if (player.view == board.sides[1].name) {
+                pop();
+            }
+        } else {
+            if (board.sides.length == 2) {
+                push();
+                let white = board.sides[0].color;
+                let black = board.sides[1].color;
+
+                fill(white);
+                noStroke();
+                textSize(30);
+                textAlign(CENTER, TOP);
+                text("Choose a side", boardSize / 2, boardSize / 2 - squareSize * 1.5);
+
+
+                setupGlyphStyle(squareSize);
+
+                if (checkPlayerByName(board.sides[0].name) == false) {
+                    fill(white);
+                    stroke(black);
+                    text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
+                }
+
+                if (checkPlayerByName(board.sides[1].name) == false) {
+                    fill(black);
+                    stroke(white);
+                    text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
+                }
+
+                pop();
+            }
+
         }
-    } else {
-        if (board.sides.length == 2) {
-            push();
-            let white = board.sides[0].color;
-            let black = board.sides[1].color;
-
-            fill(white);
-            noStroke();
-            textSize(30);
-            textAlign(CENTER, TOP);
-            text("Choose a side", boardSize / 2, boardSize / 2 - squareSize * 1.5)
-
-
-            setupGlyphStyle(squareSize);
-
-            fill(white);
-            stroke(black);
-            text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
-
-            fill(black);
-            stroke(white);
-            text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
-
-            pop();
-        }
-
-    }
 }
 
 
@@ -107,15 +129,21 @@ function mousePressed() {
             let iconH = squareSize * 1.25;
 
             // Select White
-            if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
-                player.side = board.sides[0];
-                player.view = board.sides[0].name;
+            if (checkPlayerByName(board.sides[0].name) == false) {
+                if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+                    player.side = board.sides[0];
+                    player.view = board.sides[0].name;
+                    addPlayer(player.side.name);
+                }
             }
 
             // Select Black
-            if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
-                player.side = board.sides[1];
-                player.view = board.sides[1].name;
+            if (checkPlayerByName(board.sides[1].name) == false) {
+                if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+                    player.side = board.sides[1];
+                    player.view = board.sides[1].name;
+                    addPlayer(player.side.name);
+                }
             }
         }
     }
@@ -222,11 +250,13 @@ function getSideAtCoordinate(col, row) {
 }
 
 function resetBoard() {
-    DBData.remove();
+    boardData.remove();
     initialiseBoard();
     console.log("sending data:")
     console.log(board)
-    DBData.set(board);
+    players = [];
+    playerData.set(players);
+    boardData.set(board);
 }
 
 function initialiseBoard() {
@@ -279,3 +309,35 @@ function setupGlyphStyle(size = iconSize) {
     textFont(fontIcon, size)
     textAlign(CENTER, CENTER)
 }
+
+function updatePlayers(data) {
+    players = data;
+}
+
+function addPlayer(player) {
+    players.push(player);
+    playerData.set(players);
+}
+
+function checkPlayerByName(playerName) {
+    var result = false;
+    for (let p of players)
+        if (p == playerName)
+            result = true;
+    return result;
+}
+
+window.addEventListener('beforeunload', (event) => {
+    if (player.side) {
+        for (let p = 0; p < players.length; p++)
+            if (players[p] == player.side.name) {
+                players.splice(p, 1);
+                playerData.set(players);
+            }
+
+        // // Cancel the event as stated by the standard.
+        // event.preventDefault();
+        // // Chrome requires returnValue to be set.
+        // event.returnValue = '';
+    }
+});

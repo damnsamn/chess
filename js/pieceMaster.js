@@ -105,7 +105,7 @@ class Piece {
 
                 console.log("sending data:")
                 console.log(board)
-                DBData.set(board);
+                boardData.set(board);
             }
         }
     }
