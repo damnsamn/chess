@@ -91,28 +91,27 @@ function draw() {
 // Input Events
 function mousePressed() {
     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-        if (player.side) {
+        if (player.side && board.turn.name == player.side.name) {
             let selection = player.selectedPiece;
             selectPieceAtMouse();
             if (selection && selection.moves.length)
                 selection.moveTo(player.gridMouse.x, player.gridMouse.y);
         } else {
-            let whiteX = boardSize / 2 - (squareSize * 1.5);
-            let blackX = boardSize / 2 + (squareSize * 0.5);
-            let iconY = boardSize / 2 - (squareSize * 0.5);
+            let whiteX = marginX + boardSize / 2 - (squareSize * 1.5);
+            let blackX = marginX + boardSize / 2 + (squareSize * 0.5);
+            let iconY = marginY + boardSize / 2 - (squareSize * 0.5);
             let iconW = squareSize;
             let iconH = squareSize * 1.25;
 
-            console.log(`mouseX: ${mouseX}`);
-            console.log(`mouseY: ${mouseY}`);
-
-            // TODO: Select a side
-
-            if (mouseX > marginX + whiteX && mouseX < whiteX + iconW && mouseY > marginY + iconY && mouseY < iconH)
+            if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
                 player.side = board.sides[0];
+                player.view = board.sides[0].name;
+            }
 
-            if (mouseX > marginX + blackX && mouseX < blackX + iconW && mouseY > marginY + iconY && mouseY < iconH)
+            if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
                 player.side = board.sides[1];
+                player.view = board.sides[1].name;
+            }
         }
     }
 }
@@ -164,14 +163,18 @@ function mouseGrid() {
 function selectPieceAtMouse() {
     let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
 
-    // Deselect, if clicking selected piece
-    if (selection == player.selectedPiece)
-        selection = player.selectedPiece = null;
+    if (selection == Null)
+        player.selectedPiece = selection;
+    else if (selection.side.name == player.side.name) {
+        // Deselect, if clicking selected piece
+        if (selection == player.selectedPiece)
+            selection = player.selectedPiece = null;
 
-    player.selectedPiece = selection;
-    if (selection && board.isFirstMove)
-        player.selectedPiece.getMoves();
-    console.log(player.selectedPiece);
+        player.selectedPiece = selection;
+        if (selection && board.isFirstMove)
+            player.selectedPiece.getMoves();
+        console.log(player.selectedPiece);
+    }
 }
 
 function darken(c, s) {
