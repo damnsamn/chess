@@ -17,8 +17,8 @@ const boardSize = 600;
 const marginX = (w - boardSize) / 2;
 const marginY = (h - boardSize) / 2;
 const squareSize = boardSize / 8;
-const iconFontPath = '/assets/fa-solid-900.ttf';
-const textFontPath = '/assets/RobotoMono-Bold.ttf';
+const iconFontPath = 'assets/fa-solid-900.ttf';
+const textFontPath = 'assets/RobotoMono-Bold.ttf';
 const iconSize = squareSize / 1.5;
 
 // Glyphs object
