@@ -327,17 +327,26 @@ function checkPlayerByName(playerName) {
     return result;
 }
 
-window.addEventListener('beforeunload', (event) => {
+// Remove player when closing the window/refreshing
+window.addEventListener('beforeunload', playerLeave);
+// Remove player when window loses focus (mobile OR desktop)
+window.addEventListener('blur', playerLeave);
+// Re-add player when window regains focus
+window.addEventListener('focus', playerReturn);
+
+
+function playerLeave() {
     if (player.side) {
         for (let p = 0; p < players.length; p++)
             if (players[p] == player.side.name) {
                 players.splice(p, 1);
                 playerData.set(players);
             }
-
-        // // Cancel the event as stated by the standard.
-        // event.preventDefault();
-        // // Chrome requires returnValue to be set.
-        // event.returnValue = '';
     }
-});
+}
+function playerReturn() {
+    if (player.side) {
+        players.push(player.side.name);
+        playerData.set(players);
+    }
+}
