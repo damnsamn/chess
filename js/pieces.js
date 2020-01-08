@@ -11,19 +11,19 @@ class Pawn extends Piece {
 
         // Forward
         if (!board.checkPositionIsOccupied(this.position.index.x, yStep) && board.state[this.position.index.x][yStep] !== undefined)
-            this.addMove(this.position.index.x, yStep );
+            this.addMove(this.position.index.x, yStep);
 
         // Two-step
         if (!this.moved && !board.checkPositionIsOccupied(this.position.index.x, yStep) && !board.checkPositionIsOccupied(this.position.index.x, yStep + yDir))
-            this.addMove(this.position.index.x, yStep + yDir );
+            this.addMove(this.position.index.x, yStep + yDir);
 
         // Capture Left
         if (board.checkPositionIsOccupied(this.position.index.x - 1, yStep) && board.state[this.position.index.x - 1][yStep].side.name != this.side.name)
-            this.addMove(this.position.index.x - 1, yStep );
+            this.addMove(this.position.index.x - 1, yStep);
 
         // Capture Right
         if (board.checkPositionIsOccupied(this.position.index.x + 1, yStep) && board.state[this.position.index.x + 1][yStep].side.name != this.side.name)
-            this.addMove(this.position.index.x + 1, yStep );
+            this.addMove(this.position.index.x + 1, yStep);
     }
 
 
@@ -37,14 +37,13 @@ class Rook extends Piece {
     getMoves() {
         this.moves = [];
 
-        // left
-        this.moveLoop(-1, 0);
-        // right
-        this.moveLoop(1, 0);
-        // up
-        this.moveLoop(0, 1);
-        // down
-        this.moveLoop(0, -1);
+
+        for (let x = -1; x <= 1; x++)
+            if (x != 0)
+                this.moveLoop(x, 0);
+            else
+                for (let y = -1; y <= 1; y += 2)
+                    this.moveLoop(x, y);
 
     }
 }
@@ -57,33 +56,17 @@ class Knight extends Piece {
     getMoves() {
         this.moves = [];
 
-        // Top-Left
-        // this.checkEmptyOrEnemy(this.position.index.x - 1, this.position.index.y + 2);
-        this.moveLoop(-1, 2, 1);
-        // Top-Right
-        // this.checkEmptyOrEnemy(this.position.index.x + 1, this.position.index.y + 2);
-        this.moveLoop(1, 2, 1);
-
-        // Right-Top
-        // this.checkEmptyOrEnemy(this.position.index.x + 2, this.position.index.y + 1);
-        this.moveLoop(2, 1, 1);
-        // Right-Bottom
-        // this.checkEmptyOrEnemy(this.position.index.x + 2, this.position.index.y - 1);
-        this.moveLoop(2, -1, 1);
-
-        // Bottom-Left
-        // this.checkEmptyOrEnemy(this.position.index.x + 1, this.position.index.y - 2);
-        this.moveLoop(-1, -2, 1);
-        // Bottom-Right
-        // this.checkEmptyOrEnemy(this.position.index.x - 1, this.position.index.y - 2);
-        this.moveLoop(1, -2, 1);
-
-        // Left-Top
-        // this.checkEmptyOrEnemy(this.position.index.x - 2, this.position.index.y + 1);
-        this.moveLoop(-2, 1, 1);
-        // Left-Bottom
-        // this.checkEmptyOrEnemy(this.position.index.x - 2, this.position.index.y - 1);
-        this.moveLoop(-2, -1, 1);
+        for (let x = -2; x <= 2; x++)
+            if (x != 0)
+                if (x % 2 == 0) {
+                    for (let y = -1; y <= 1; y++)
+                        if (y != 0)
+                            this.moveLoop(x, y, 1);
+                }
+                else
+                    for (let y = -2; y <= 2; y++)
+                        if (y % 2 == 0 && y != -0)
+                            this.moveLoop(x, y, 1);
     }
 }
 
@@ -95,14 +78,9 @@ class Bishop extends Piece {
     getMoves() {
         this.moves = [];
 
-        // up, right
-        this.moveLoop(1, 1);
-        // up, left
-        this.moveLoop(-1, 1);
-        // down, right
-        this.moveLoop(1, -1);
-        // down, left
-        this.moveLoop(-1, -1);
+        for (let x = -1; x <= 1; x += 2)
+            for (let y = -1; y <= 1; y += 2)
+                this.moveLoop(x, y);
     }
 }
 
@@ -114,22 +92,9 @@ class Queen extends Piece {
     getMoves() {
         this.moves = [];
 
-        // up
-        this.moveLoop(0, 1);
-        // up, right
-        this.moveLoop(1, 1);
-        // right
-        this.moveLoop(1, 0);
-        // down, right
-        this.moveLoop(1, -1);
-        // down
-        this.moveLoop(0, -1);
-        // down, left
-        this.moveLoop(-1, -1);
-        // left
-        this.moveLoop(-1, 0);
-        // up, left
-        this.moveLoop(-1, 1);
+        for (let x = -1; x <= 1; x++)
+            for (let y = -1; y <= 1; y++)
+                this.moveLoop(x, y);
     }
 }
 
@@ -142,22 +107,9 @@ class King extends Piece {
     getMoves() {
         this.moves = [];
 
-        // up
-        this.moveLoop(0, 1, 1);
-        // up, right
-        this.moveLoop(1, 1, 1);
-        // right
-        this.moveLoop(1, 0, 1);
-        // down, right
-        this.moveLoop(1, -1, 1);
-        // down
-        this.moveLoop(0, -1, 1);
-        // down, left
-        this.moveLoop(-1, -1, 1);
-        // left
-        this.moveLoop(-1, 0, 1);
-        // up, left
-        this.moveLoop(-1, 1, 1);
+        for (let x = -1; x <= 1; x++)
+            for (let y = -1; y <= 1; y++)
+                this.moveLoop(x, y, 1);
 
         this.checkLoop();
     }
@@ -167,25 +119,55 @@ class King extends Piece {
 
 
         this.checkedBy = [];
-        for (let piece of this.potentialAttackers)
+        for (let piece of this.potentialAttackers) {
+            piece.getMoves();
             for (let move of piece.moves)
                 if (move.x == this.position.index.x && move.y == this.position.index.y)
                     this.checkedBy.push(piece);
-        if (!board.check)
-            board.check = this.checkedBy.length ? this : false;
+        }
+
+        // Perform checkLoop() for each King
+        let check = Null;
+        for (let king of getPiecesOfType("KING")) {
+            if (king.checkedBy && king.checkedBy.length)
+                check = king;
+        }
+        board.check = check;
+
     }
 
     getPotentialAttackers() {
         this.potentialAttackers = [];
-        for (var x = -1; x <= 1; x++)
-            for (var y = -1; y <= 1; y++) {
-                this.loopIncrement(x, y, (posX, posY) => {
-                    let statePos = board.state[posX][posY];
-                    if (statePos != Null && statePos.side.name != this.side.name && statePos.type != this.type)
-                        this.potentialAttackers.push(statePos);
-                })
 
+        // Cardinal & ordinal directions
+        for (let x = -1; x <= 1; x++)
+            for (let y = -1; y <= 1; y++) {
+                // console.log(`checking: ${x}, ${y}`)
+                this.loopIncrementAttackers(x, y);
             }
+
+
+        // Knight
+        for (let x = -2; x <= 2; x++)
+            if (x != 0)
+                if (x % 2 == 0) {
+                    for (let y = -1; y <= 1; y++)
+                        if (y != 0)
+                            this.loopIncrementAttackers(x, y, 1);
+                }
+                else
+                    for (let y = -2; y <= 2; y++)
+                        if (y % 2 == 0 && y != -0)
+                            this.loopIncrementAttackers(x, y, 1);
+
+    }
+
+    loopIncrementAttackers(x, y, n = 0) {
+        this.loopIncrement(x, y, (posX, posY) => {
+            let statePos = board.state[posX][posY];
+            if (statePos != Null && statePos.side.name != this.side.name && statePos.type != this.type)
+                this.potentialAttackers.push(statePos);
+        }, n)
     }
 
 }

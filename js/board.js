@@ -14,6 +14,7 @@ class Board {
         ];
         this.isFirstMove = isFirstMove;
         this.lastMove = Null;
+        this.check = Null;
     }
 
     drawBoard() {
@@ -35,7 +36,16 @@ class Board {
                 c.setAlpha(75);
                 fill(c);
                 rect(0, 0, squareSize, squareSize);
+            }
 
+
+            if (board.check) {
+                if (board.check.position.x == x && board.check.position.y == y) {
+                    let c = color(colors.red);
+                    c.setAlpha(115);
+                    fill(c);
+                    rect(0, 0, squareSize, squareSize);
+                }
             }
 
 

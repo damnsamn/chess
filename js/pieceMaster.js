@@ -100,10 +100,6 @@ class Piece {
                 if (board.isFirstMove)
                     board.isFirstMove = false;
 
-                // Perform checkLoop() for each King
-                for (let king of getPiecesOfType("KING"))
-                    king.checkLoop();
-
                 // Change turn
                 board.turn = this.side.enemy;
 
@@ -119,7 +115,7 @@ class Piece {
         let newY = this.position.index.y + incrementY;
 
         // if n, only loop n times - else loop until we hit array bounds
-        for (let i = 0; n ? i < n : i < board.state.length; i++)
+        for (let i = 0; n != 0 ? i < n : i < board.state.length; i++)
             if (newX >= 0 && newX < board.state.length && newY >= 0 && newY < board.state.length) {
                 let newPos = board.state[newX][newY];
 
