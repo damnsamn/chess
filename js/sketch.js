@@ -9,11 +9,13 @@ var player = {
 var loaded;
 var incomingData;
 var board;
+var fontIcon, fontText;
 
 initialiseBoard();
 
 function preload() {
-    iconFont = loadFont(iconFontPath);
+    fontIcon = loadFont(iconFontPath);
+    fontText = loadFont(textFontPath);
 }
 
 function setup() {
@@ -23,6 +25,7 @@ function setup() {
         red: color("#bd2d2d"),
         blue: color("#43ace6")
     }
+    textFont(fontText);
 
     console.log(board);
     console.log(player);
@@ -68,7 +71,7 @@ function draw() {
             noStroke();
             textSize(30);
             textAlign(CENTER, TOP);
-            text("WHO DO YOU SERVE?", boardSize / 2, boardSize / 2 - squareSize * 1.5)
+            text("Choose a side", boardSize / 2, boardSize / 2 - squareSize * 1.5)
 
 
             setupGlyphStyle(squareSize);
@@ -103,11 +106,13 @@ function mousePressed() {
             let iconW = squareSize;
             let iconH = squareSize * 1.25;
 
+            // Select White
             if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
                 player.side = board.sides[0];
                 player.view = board.sides[0].name;
             }
 
+            // Select Black
             if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
                 player.side = board.sides[1];
                 player.view = board.sides[1].name;
@@ -165,6 +170,8 @@ function selectPieceAtMouse() {
 
     if (selection == Null)
         player.selectedPiece = selection;
+
+    // Limit selection to players' own side
     else if (selection.side.name == player.side.name) {
         // Deselect, if clicking selected piece
         if (selection == player.selectedPiece)
@@ -269,6 +276,6 @@ function initialiseBoard() {
 
 function setupGlyphStyle(size = iconSize) {
     strokeWeight(6);
-    textFont(iconFont, size)
+    textFont(fontIcon, size)
     textAlign(CENTER, CENTER)
 }
