@@ -49,6 +49,14 @@ function setup() {
                 console.log(data.val());
                 updatePlayers(data.val());
             }
+            else {
+                player = {
+                    side: null,
+                    gridMouse: {},
+                    selectedPiece: null,
+                    view: null
+                }
+            }
         },
         err => console.log(err)
     );
@@ -57,16 +65,20 @@ function setup() {
 function draw() {
     if (bg)
         background(bg);
+    cursor(ARROW);
     noFill();
     strokeWeight(1);
     stroke(board.sides[0].color);
     rect(0, 0, boardSize + marginX * 2, boardSize + marginY * 2);
 
-    translate(marginX, marginY)
     select("body").style("background", bg);
 
-    if (loaded)
+    if (loaded) {
+
         if (player.side) {
+            push();
+            buttons.resetBoard.draw(width - 150, 15, 125, 35)
+            translate(marginX, marginY)
             if (player.view == board.sides[1].name) {
                 push();
                 translate(width - marginX * 2, height - marginY * 2);
@@ -81,37 +93,34 @@ function draw() {
             if (player.view == board.sides[1].name) {
                 pop();
             }
+            pop();
         } else {
             if (board.sides.length == 2) {
                 push();
-                let white = board.sides[0].color;
-                let black = board.sides[1].color;
 
-                fill(white);
+                fill(255);
                 noStroke();
                 textSize(30);
                 textAlign(CENTER, TOP);
-                text("Choose a side", boardSize / 2, boardSize / 2 - squareSize * 1.5);
+                text("Choose a side:", width / 2, height / 2 - squareSize * 1.5);
 
+                let iconW = squareSize;
+                let iconH = squareSize * 1.25;
 
-                setupGlyphStyle(squareSize);
 
                 // if (checkPlayerByName(board.sides[0].name) == false) {
-                fill(white);
-                stroke(black);
-                text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
+                buttons.selectWhite.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
                 // }
 
                 // if (checkPlayerByName(board.sides[1].name) == false) {
-                fill(black);
-                stroke(white);
-                text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
+                buttons.selectBlack.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
                 // }
 
                 pop();
             }
 
         }
+    }
 
     if (checkMate) {
         push();
@@ -132,35 +141,28 @@ function draw() {
 // Input Events
 function mousePressed() {
     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
-        if (player.side && board.turn.name == player.side.name) {
-            let selection = player.selectedPiece;
-            selectPieceAtMouse();
-            if (selection && selection.moves.length)
-                selection.moveTo(player.gridMouse.x, player.gridMouse.y);
-        } else {
-            let whiteX = marginX + boardSize / 2 - (squareSize * 1.5);
-            let blackX = marginX + boardSize / 2 + (squareSize * 0.5);
-            let iconY = marginY + boardSize / 2 - (squareSize * 0.5);
-            let iconW = squareSize;
-            let iconH = squareSize * 1.25;
+        if (player.side) {
 
-            // Select White
-            // if (checkPlayerByName(board.sides[0].name) == false) {
-            if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+            buttons.resetBoard.catchClick(resetBoard);
+
+            if (board.turn.name == player.side.name) {
+                let selection = player.selectedPiece;
+                selectPieceAtMouse();
+                if (selection && selection.moves.length)
+                    selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+            }
+        } else {
+            buttons.selectWhite.catchClick(() => {
                 player.side = board.sides[0];
                 player.view = board.sides[0].name;
                 addPlayer(player.side.name);
-            }
-            // }
+            });
 
-            // Select Black
-            // if (checkPlayerByName(board.sides[1].name) == false) {
-            if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+            buttons.selectBlack.catchClick(() => {
                 player.side = board.sides[1];
                 player.view = board.sides[1].name;
                 addPlayer(player.side.name);
-            }
-            // }
+            });
         }
     }
 }
@@ -210,21 +212,23 @@ function mouseGrid() {
 }
 
 function selectPieceAtMouse() {
-    let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
+    if (player && player.gridMouse.x < 0 && player.gridMouse.x < 8 && player.gridMouse.y < 0 && player.gridMouse.y < 8) {
+        let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
 
-    if (selection == Null)
-        player.selectedPiece = selection;
+        if (selection == Null)
+            player.selectedPiece = selection;
 
-    // Limit selection to players' own side
-    else if (selection.side.name == player.side.name) {
-        // Deselect, if clicking selected piece
-        if (selection == player.selectedPiece)
-            selection = player.selectedPiece = null;
+        // Limit selection to players' own side
+        else if (selection.side.name == player.side.name) {
+            // Deselect, if clicking selected piece
+            if (selection == player.selectedPiece)
+                selection = player.selectedPiece = null;
 
-        player.selectedPiece = selection;
-        if (player.selectedPiece && board.isFirstMove)
-            player.selectedPiece.getMoves();
-        console.log(player.selectedPiece);
+            player.selectedPiece = selection;
+            if (player.selectedPiece && board.isFirstMove)
+                player.selectedPiece.getMoves();
+            console.log(player.selectedPiece);
+        }
     }
 }
 
@@ -269,12 +273,6 @@ function resetBoard() {
     boardData.remove();
     initialiseBoard();
     players = [];
-    player = {
-        side: null,
-        gridMouse: {},
-        selectedPiece: null,
-        view: null
-    }
     playerData.set(players);
     console.log("sending data:")
     boardData.set(board);
