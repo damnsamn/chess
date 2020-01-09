@@ -32,7 +32,7 @@ class Board {
 
             rect(0, 0, squareSize, squareSize);
 
-            if (board.lastMove.length && ((board.lastMove[1].position.x == x && board.lastMove[1].position.y == y) || (board.lastMove[0].position.x == x && board.lastMove[0].position.y == y))) {
+            if (board.lastMove.length && ((board.lastMove[1].x == x - 1 && board.lastMove[1].y == y - 1) || (board.lastMove[0].x == x - 1 && board.lastMove[0].y == y - 1))) {
                 let c = color(colors.blue);
                 c.setAlpha(75);
                 fill(c);
@@ -170,12 +170,6 @@ class Board {
     updateData(data) {
         for (let [key, value] of Object.entries(data))
             switch (key) {
-                case "lastMove":
-                    this[key] = [];
-                    for (let val of value) {
-                        this[key].push(new Piece(val.type, val.side, val.position.x, val.position.y));
-                    }
-                    break;
                 case "state":
                     this[key] = [];
                     for (let [index, array] of Object.entries(value)) {
@@ -222,8 +216,30 @@ class Board {
                     break;
             }
 
+        // set check
+        for (let king of getPiecesOfType("KING")) {
+            king.checkLoop();
+        }
+
+        if (board.check)
+            checkBreakers = [];
+
         // call getMoves() for every piece
-        boardLoop((x, y) => { if (board.state[x - 1][y - 1] !== Null) board.state[x - 1][y - 1].getMoves(); });
+        boardLoop((x, y) => {
+            if (board.state[x - 1][y - 1] !== Null && board.turn.name == board.state[x - 1][y - 1].side.name) {
+                board.state[x - 1][y - 1].getMoves();
+
+                if (board.check == board.state[x - 1][y - 1].getKing())
+                    board.state[x - 1][y - 1].getCheckBreakingMoves();
+
+                if (!board.check)
+                    board.state[x - 1][y - 1].blockCheckMoves()
+            }
+        });
+
+        if (board.check && !checkBreakers.length) {
+            checkMate = true;
+        }
     }
 
 }

@@ -11,6 +11,8 @@ var incomingData;
 var board;
 var fontIcon, fontText;
 var players = [];
+var checkMate = false;
+var checkBreakers = [];
 
 initialiseBoard();
 
@@ -31,7 +33,7 @@ function setup() {
 
     boardData.on('value',
         data => {
-            if (data.val()) {
+            if (data.val() && !checkMate) {
                 console.table('incoming boardData:');
                 console.log(data.val());
                 board.updateData(data.val());
@@ -94,28 +96,42 @@ function draw() {
 
                 setupGlyphStyle(squareSize);
 
-                if (checkPlayerByName(board.sides[0].name) == false) {
-                    fill(white);
-                    stroke(black);
-                    text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
-                }
+                // if (checkPlayerByName(board.sides[0].name) == false) {
+                fill(white);
+                stroke(black);
+                text(glyphs.king, boardSize / 2 - squareSize, boardSize / 2);
+                // }
 
-                if (checkPlayerByName(board.sides[1].name) == false) {
-                    fill(black);
-                    stroke(white);
-                    text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
-                }
+                // if (checkPlayerByName(board.sides[1].name) == false) {
+                fill(black);
+                stroke(white);
+                text(glyphs.king, boardSize / 2 + squareSize, boardSize / 2);
+                // }
 
                 pop();
             }
 
         }
+
+    if (checkMate) {
+        push();
+        fill(0, 0, 0, 175)
+        noStroke();
+        rect(-marginX, -marginY, width, height);
+        fill(255);
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text(`CHECKMATE`, boardSize / 2, boardSize / 2 - 30);
+        textSize(20);
+        text(`${board.check.side.enemy.name} is victorious!`, boardSize / 2, boardSize / 2 + 30);
+        pop();
+    }
 }
 
 
 // Input Events
 function mousePressed() {
-    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
         if (player.side && board.turn.name == player.side.name) {
             let selection = player.selectedPiece;
             selectPieceAtMouse();
@@ -129,22 +145,22 @@ function mousePressed() {
             let iconH = squareSize * 1.25;
 
             // Select White
-            if (checkPlayerByName(board.sides[0].name) == false) {
-                if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
-                    player.side = board.sides[0];
-                    player.view = board.sides[0].name;
-                    addPlayer(player.side.name);
-                }
+            // if (checkPlayerByName(board.sides[0].name) == false) {
+            if (mouseX > whiteX && mouseX < whiteX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+                player.side = board.sides[0];
+                player.view = board.sides[0].name;
+                addPlayer(player.side.name);
             }
+            // }
 
             // Select Black
-            if (checkPlayerByName(board.sides[1].name) == false) {
-                if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
-                    player.side = board.sides[1];
-                    player.view = board.sides[1].name;
-                    addPlayer(player.side.name);
-                }
+            // if (checkPlayerByName(board.sides[1].name) == false) {
+            if (mouseX > blackX && mouseX < blackX + iconW && mouseY > iconY && mouseY < iconY + iconH) {
+                player.side = board.sides[1];
+                player.view = board.sides[1].name;
+                addPlayer(player.side.name);
             }
+            // }
         }
     }
 }
@@ -206,7 +222,7 @@ function selectPieceAtMouse() {
             selection = player.selectedPiece = null;
 
         player.selectedPiece = selection;
-        if (selection && board.isFirstMove)
+        if (player.selectedPiece && board.isFirstMove)
             player.selectedPiece.getMoves();
         console.log(player.selectedPiece);
     }
@@ -252,11 +268,19 @@ function getSideAtCoordinate(col, row) {
 function resetBoard() {
     boardData.remove();
     initialiseBoard();
-    console.log("sending data:")
-    console.log(board)
     players = [];
+    player = {
+        side: null,
+        gridMouse: {},
+        selectedPiece: null,
+        view: null
+    }
     playerData.set(players);
+    console.log("sending data:")
     boardData.set(board);
+    checkMate = false;
+    noLoop();
+    loop();
 }
 
 function initialiseBoard() {
@@ -276,7 +300,7 @@ function initialiseBoard() {
         new Knight(whiteSide, B, 1),
         new Bishop(whiteSide, C, 1),
         new Queen(whiteSide, D, 1),
-        new King(whiteSide, E, 1),
+        new King(whiteSide, E, 1), // E1
         new Bishop(whiteSide, F, 1),
         new Knight(whiteSide, G, 1),
         new Rook(whiteSide, H, 1)
@@ -295,7 +319,7 @@ function initialiseBoard() {
         new Rook(blackSide, A, 8),
         new Knight(blackSide, B, 8),
         new Bishop(blackSide, C, 8),
-        new Queen(blackSide, D, 8),
+        new Queen(blackSide, D, 8), // D8
         new King(blackSide, E, 8),
         new Bishop(blackSide, F, 8),
         new Knight(blackSide, G, 8),
@@ -338,15 +362,17 @@ window.addEventListener('focus', playerReturn);
 function playerLeave() {
     if (player.side) {
         for (let p = 0; p < players.length; p++)
-            if (players[p] == player.side.name) {
+            if (players[p] == player.side.name)
                 players.splice(p, 1);
-                playerData.set(players);
-            }
+
+        playerData.set(players);
     }
 }
 function playerReturn() {
     if (player.side) {
-        players.push(player.side.name);
-        playerData.set(players);
+        if (!players.includes(player.side.name)) {
+            players.push(player.side.name);
+            playerData.set(players);
+        }
     }
 }

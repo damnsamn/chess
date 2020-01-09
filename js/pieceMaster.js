@@ -63,51 +63,131 @@ class Piece {
 
     }
 
-    checkBreakingMoves() {
-
+    getKing() {
+        for (let king of getPiecesOfType("KING"))
+            if (king.side.name == this.side.name)
+                return king;
     }
 
-    moveTo(col, row) {
+    getCheckBreakingMoves() {
+        let availableMoves = this.moves;
+
+        this.moves = [];
+        let currentCheck = board.check;
+        for (let move of availableMoves) {
+            let mockMove = this.beginMove(move.x, move.y);
+
+            for (let king of getPiecesOfType("KING"))
+                if (king.side.name == this.side.name)
+                    king.checkLoop();
+
+            if (board.check != currentCheck) {
+                this.moves.push(move);
+            }
+
+            board.check = currentCheck;
+            this.revertMove(mockMove.original, mockMove.destination);
+        }
+
+        if (this.moves.length)
+            checkBreakers.push(this);
+    }
+
+    blockCheckMoves() {
+        for (let i = 0; i < this.moves.length; i++) {
+            let mockMove = this.beginMove(this.moves[i].x, this.moves[i].y);
+            let currentCheck = board.check;
+
+            for (let king of getPiecesOfType("KING"))
+                if (king.side.name == this.side.name)
+                    king.checkLoop();
+
+            if (board.check)
+                this.moves.splice(i, 1);
+
+            board.check = currentCheck;
+            this.revertMove(mockMove.original, mockMove.destination);
+        }
+    }
+
+    beginMove(x, y) {
+        let This = this;
+        let original = {
+            piece: This,
+            x: This.position.index.x,
+            y: This.position.index.y
+        };
+        let destination = {
+            piece: board.state[x][y],
+            x: x,
+            y: y
+        };
+
+        // Set current state position to Null
+        board.state[this.position.index.x][this.position.index.y] = Null;
+
+        // Change Piece's position coords
+        this.position.x = x + 1;
+        this.position.index.x = x;
+        this.position.y = y + 1;
+        this.position.index.y = y;
+
+        // Change state destination to this
+        board.state[this.position.index.x][this.position.index.y] = Null;
+        board.state[this.position.index.x][this.position.index.y] = this;
+
+        return {
+            original: original,
+            destination: destination
+        }
+    }
+
+    revertMove(original, destination) {
+        this.position.x = original.x + 1;
+        this.position.index.x = original.x;
+        this.position.y = original.y + 1;
+        this.position.index.y = original.y;
+
+        board.state[original.x][original.y] = original.piece;
+        board.state[destination.x][destination.y] = destination.piece;
+    }
+
+    moveTo(col, row, commit = true) {
         let moves = Object.values(this.moves);
 
         // Check col,row correspond to an existing move in this.moves
         for (let move of moves) {
             if (col == move.x + 1 && row == move.y + 1) {
-                // Add lastMove ghost
-                board.lastMove = [new Piece(this.type, this.side, this.position.x, this.position.y)];
 
-                this.moved = true;
+                let mockMove = this.beginMove(col - 1, row - 1);
 
-                // Set current state position to Null
-                board.state[this.position.index.x][this.position.index.y] = Null;
-
-                // Change Piece's position coords
-                this.position.x = col;
-                this.position.index.x = col - 1;
-                this.position.y = row;
-                this.position.index.y = row - 1;
-
-                // Change state destination to this
-                board.state[this.position.index.x][this.position.index.y] = Null;
-                board.state[this.position.index.x][this.position.index.y] = this;
-
-                // show *which* piece last moved
-                board.lastMove.push(this);
-
-                // Deselect on move
-                player.selectedPiece = Null;
-
-                if (board.isFirstMove)
-                    board.isFirstMove = false;
-
-                // Change turn
-                board.turn = this.side.enemy;
-
-                console.log("sending data:")
-                console.log(board)
-                boardData.set(board);
+                this.commitMove(mockMove.original);
             }
         }
+    }
+
+    commitMove(original) {
+        // Add lastMove ghost
+        board.lastMove = [{ x: original.x, y: original.y }];
+
+        this.moved = true;
+
+        // show *which* piece last moved
+        board.lastMove.push({ x: this.position.index.x, y: this.position.index.y });
+
+        // Deselect on move
+        player.selectedPiece = Null;
+
+        if (board.isFirstMove)
+            board.isFirstMove = false;
+
+        // Change turn
+        board.turn = this.side.enemy;
+
+        console.log("sending data:")
+        console.log(board)
+        boardData.set(board);
+
     }
 
     loopIncrement(incrementX, incrementY, loopFunction, n = 0) {
@@ -134,9 +214,9 @@ class Piece {
         this.loopIncrement(
             incrementX,
             incrementY,
-            (x, y) => { this.addMove(x, y) },
-            n
-        );
+            (x, y) => {
+                this.addMove(x, y);
+            }, n);
     }
 
     setGlyph() {
