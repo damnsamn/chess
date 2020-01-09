@@ -140,18 +140,18 @@ function draw() {
 
 // Input Events
 function mousePressed() {
-    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
-        if (player.side) {
+    if (player.side) {
+        buttons.resetBoard.catchClick(resetBoard);
 
-            buttons.resetBoard.catchClick(resetBoard);
-
+        if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
             if (board.turn.name == player.side.name) {
                 let selection = player.selectedPiece;
                 selectPieceAtMouse();
                 if (selection && selection.moves.length)
                     selection.moveTo(player.gridMouse.x, player.gridMouse.y);
             }
-        } else {
+        }
+    } else {
             buttons.selectWhite.catchClick(() => {
                 player.side = board.sides[0];
                 player.view = board.sides[0].name;
@@ -164,7 +164,6 @@ function mousePressed() {
                 addPlayer(player.side.name);
             });
         }
-    }
 }
 
 function mouseClicked() {
@@ -212,7 +211,7 @@ function mouseGrid() {
 }
 
 function selectPieceAtMouse() {
-    if (player && player.gridMouse.x < 0 && player.gridMouse.x < 8 && player.gridMouse.y < 0 && player.gridMouse.y < 8) {
+    if (player && player.gridMouse.x >= 0 && player.gridMouse.x <= 7 && player.gridMouse.y >= 0 && player.gridMouse.y <= 7) {
         let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
 
         if (selection == Null)
@@ -349,12 +348,12 @@ function checkPlayerByName(playerName) {
     return result;
 }
 
-// Remove player when closing the window/refreshing
-window.addEventListener('beforeunload', playerLeave);
-// Remove player when window loses focus (mobile OR desktop)
-window.addEventListener('blur', playerLeave);
-// Re-add player when window regains focus
-window.addEventListener('focus', playerReturn);
+// // Remove player when closing the window/refreshing
+// window.addEventListener('beforeunload', playerLeave);
+// // Remove player when window loses focus (mobile OR desktop)
+// window.addEventListener('blur', playerLeave);
+// // Re-add player when window regains focus
+// window.addEventListener('focus', playerReturn);
 
 
 function playerLeave() {

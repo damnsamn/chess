@@ -112,7 +112,7 @@ class Board {
             fill(bg);
             stroke(255, 255, 255, 100);
         }
-        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4, circleSize);
+        // circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4, circleSize);
 
         fill(board.sides[1].color);
         stroke(board.sides[0].color);
@@ -124,7 +124,7 @@ class Board {
             fill(bg);
             stroke(255, 255, 255, 100);
         }
-        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4 + statusIconSize * 1.5, circleSize);
+        // circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4 + statusIconSize * 1.5, circleSize);
 
 
 
