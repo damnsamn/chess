@@ -7,6 +7,7 @@ class Side {
 
     definePieces(array) {
         board.addSide(this);
+        activity[this.name] = false;
 
         // let pieces = Object.values(obj)
         for (let piece of array) {

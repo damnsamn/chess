@@ -98,7 +98,7 @@ class Board {
         textStyle(BOLD);
         textAlign(CENTER, CENTER);
         fill(board.sides[0].color);
-        text(`Current turn: ${board.turn.name}`, boardSize / 2, -marginY/1.5);
+        text(`Current turn: ${board.turn.name}`, boardSize / 2, -marginY / 1.5);
 
         let statusIconSize = 16;
         let circleSize = 12;
@@ -106,7 +106,7 @@ class Board {
 
         text(glyphs.king, -marginX / 1.5, -marginY / 1.5);
         strokeWeight(1.5);
-        if (board.sides[0].active) {
+        if (activity[board.sides[0].name]) {
             fill(colors.green);
             stroke(colors.green);
         } else {
@@ -118,7 +118,7 @@ class Board {
         fill(board.sides[1].color);
         stroke(board.sides[0].color);
         text(glyphs.king, -marginX / 1.5, -marginY / 1.5 + statusIconSize * 1.5);
-        if (board.sides[1].active) {
+        if (activity[board.sides[1].name]) {
             fill(colors.green);
             stroke(colors.green);
         } else {

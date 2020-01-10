@@ -13,6 +13,7 @@ var fontIcon, fontText;
 var players = [];
 var checkMate = false;
 var checkBreakers = [];
+var activity = {};
 
 initialiseBoard();
 
@@ -34,10 +35,21 @@ function setup() {
     boardData.on('value',
         data => {
             if (data.val() && !checkMate) {
-                console.table('incoming boardData:');
+                console.table('Incoming boardData:');
                 console.log(data.val());
                 board.updateData(data.val());
                 loaded = true;
+            }
+        },
+        err => console.log(err)
+    );
+
+    activityData.on('value',
+        data => {
+            if (data.val()) {
+                console.table('Incoming Activity:');
+                console.log(data.val());
+                activity = data.val();
             }
         },
         err => console.log(err)
@@ -318,18 +330,18 @@ function setPlayerActivity(bool) {
     if (player.side) {
         for (let side of board.sides)
             if (side.name == player.side.name)
-                side.active = bool;
+                activity[side.name] = bool;
         console.log("Player Activity Changed:")
-        console.log(board)
-        boardData.set(board);
+        console.log(activity)
+        activityData.set(activity);
     }
 }
 function setAllActivity(bool) {
-    for (let side of board.sides)
+    for (let side of activity)
         side.active = bool;
     console.log("Reset Player Activity:")
-    console.log(board)
-    boardData.set(board);
+    console.log(activity)
+    activityData.set(activity);
 }
 
 // // Remove player when closing the window/refreshing

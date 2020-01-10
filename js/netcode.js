@@ -12,3 +12,4 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var boardData = firebase.database().ref('chessData');
+var activityData = firebase.database().ref('activity');
