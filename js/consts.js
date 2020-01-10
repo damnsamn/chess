@@ -11,9 +11,10 @@ const H = 8;
 const Null = "";
 
 // Global Constants
-const w = 800;
-const h = 800;
-const boardSize = 600;
+const mobile = window.innerWidth < 800;
+const w = mobile ? window.innerWidth : 800;
+const h = mobile ? w : 800;
+const boardSize = w * 0.75;
 const marginX = (w - boardSize) / 2;
 const marginY = (h - boardSize) / 2;
 const squareSize = boardSize / 8;

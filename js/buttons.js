@@ -52,10 +52,10 @@ var buttons = {
         text(glyphs.king, self.width / 2, self.height / 2);
     }),
     resetBoard: new Button((x, y, self) => {
-        textSize(16);
+        textSize(mobile ? 12 : 16);
         fill(self.color);
         noStroke();
         textAlign(CENTER, CENTER);
-        text("RESET BOARD", self.width / 2, self.height / 2);
+        text("RESET BOARD", self.width / 2, self.height / 2 - 16 / 4);
     })
 }

@@ -98,7 +98,7 @@ class Board {
         textStyle(BOLD);
         textAlign(CENTER, CENTER);
         fill(board.sides[0].color);
-        text(`Current turn: ${board.turn.name}`, boardSize / 2, -50);
+        text(`Current turn: ${board.turn.name}`, boardSize / 2, -marginY/1.5);
 
         let statusIconSize = 16;
         let circleSize = 12;

@@ -60,7 +60,7 @@ function draw() {
         if (player.side) {
             push();
             buttons.resetBoard.color = color(colors.red);
-            buttons.resetBoard.draw(width - 150, 15, 125, 35)
+            buttons.resetBoard.draw(width / 2 - 62.5, height - marginY / 2 + 5 - 17.5, 125, 35)
             translate(marginX, marginY)
             if (player.view == board.sides[1].name) {
                 push();
