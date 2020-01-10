@@ -57,5 +57,32 @@ var buttons = {
         noStroke();
         textAlign(CENTER, CENTER);
         text("RESET BOARD", self.width / 2, self.height / 2 - 16 / 4);
-    })
+    }),
+    promote: {
+        queen: new Button ((x, y, self) => {
+            setupGlyphStyle(squareSize);
+            fill(colors.red);
+            noStroke();
+            text(glyphs.queen, self.width / 2, self.height / 2);
+        }),
+        rook: new Button ((x, y, self) => {
+            setupGlyphStyle(squareSize);
+            fill(colors.red);
+            noStroke();
+            text(glyphs.rook, self.width / 2, self.height / 2);
+        }),
+        bishop: new Button ((x, y, self) => {
+            setupGlyphStyle(squareSize);
+            fill(colors.red);
+            noStroke();
+            text(glyphs.bishop, self.width / 2, self.height / 2);
+        }),
+        knight: new Button ((x, y, self) => {
+            setupGlyphStyle(squareSize);
+            fill(colors.red);
+            noStroke();
+            text(glyphs.knight, self.width / 2, self.height / 2);
+        }),
+
+    }
 }

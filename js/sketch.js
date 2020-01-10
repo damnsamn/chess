@@ -14,6 +14,7 @@ var players = [];
 var checkMate = false;
 var checkBreakers = [];
 var activity = {};
+var promotion = false;
 
 initialiseBoard();
 
@@ -86,6 +87,31 @@ function draw() {
             if (player.selectedPiece)
                 player.selectedPiece.showAvailableMoves();
 
+
+            if (promotion) {
+                push();
+                translate(-marginX, -marginY);
+                if (player.view == board.sides[1].name) {
+                    push();
+                    translate(width, height);
+                    rotate(PI);
+                }
+
+                fill(0, 0, 0, 175)
+                noStroke();
+                rect(0, 0, width, height);
+
+                let iconW = squareSize;
+                let iconH = squareSize * 1.25;
+
+                buttons.promote.queen.draw(width / 2 - iconW * 3.5, height / 2 - iconH / 2, iconW, iconH, true);
+                buttons.promote.rook.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH, true);
+                buttons.promote.bishop.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH, true);
+                buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH, true);
+
+                pop();
+            }
+
             if (player.view == board.sides[1].name) {
                 pop();
             }
@@ -138,7 +164,7 @@ function draw() {
 
 // Input Events
 function mousePressed() {
-    if (!checkMate) {
+    if (!checkMate && !promotion) {
         if (player.side) {
             buttons.resetBoard.catchClick(resetBoard);
 
@@ -165,6 +191,13 @@ function mousePressed() {
                 setPlayerActivity(true);
             });
         }
+    } else if (promotion) {
+        console.log("PROMOTION CLICK")
+        buttons.promote.queen.catchClick(() => { promote(promotion, "QUEEN") })
+        buttons.promote.rook.catchClick(() => { promote(promotion, "ROOK") })
+        buttons.promote.bishop.catchClick(() => { promote(promotion, "BISHOP") })
+        buttons.promote.knight.catchClick(() => { promote(promotion, "KNIGHT") })
+
     } else {
         buttons.resetBoard.catchClick(resetBoard);
     }
@@ -248,7 +281,7 @@ function getPiecesOfType(string) {
     let arr = [];
     boardLoop((x, y) => {
         let boardPointer = board.state[x - 1][y - 1];
-        if (boardPointer != Null && boardPointer.type == string)
+        if (boardPointer && boardPointer.type == string)
             arr.push(boardPointer);
     })
 
@@ -281,6 +314,7 @@ function initialiseBoard() {
 
     var whiteSide = new Side("White", "#EEEEEE");
     whiteSide.definePieces([
+        // new Pawn(whiteSide, A, 6),
         new Pawn(whiteSide, A, 2),
         new Pawn(whiteSide, B, 2),
         new Pawn(whiteSide, C, 2),
@@ -301,7 +335,7 @@ function initialiseBoard() {
 
     var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
-        new Pawn(blackSide, A, 7),
+        // new Pawn(blackSide, G, 3),
         new Pawn(blackSide, B, 7),
         new Pawn(blackSide, C, 7),
         new Pawn(blackSide, D, 7),
@@ -359,3 +393,40 @@ function playerLeave() {
 function playerReturn() {
     setPlayerActivity(true);
 }
+
+function promote(piece, target) {
+
+    switch (target) {
+        case "QUEEN":
+            piece = new Queen(piece.side, piece.position.x, piece.position.y);
+            break;
+        case "ROOK":
+            piece = new Rook(piece.side, piece.position.x, piece.position.y);
+            break;
+        case "BISHOP":
+            piece = new Bishop(piece.side, piece.position.x, piece.position.y);
+            break;
+        case "Knight":
+            piece = new Knight(piece.side, piece.position.x, piece.position.y);
+            break;
+    }
+    debugger;
+    board.state[piece.position.index.x][piece.position.index.y] = piece;
+
+    piece.getMoves();
+    promotion = false;
+
+
+    player.selectedPiece = Null;
+
+    if (board.isFirstMove)
+        board.isFirstMove = false;
+
+    // Change turn
+    board.turn = piece.side.enemy;
+
+    console.log("sending data:")
+    console.log(board)
+    boardData.set(board);
+}
+
