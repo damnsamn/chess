@@ -14,6 +14,7 @@ var players = [];
 var checkMate = false;
 var checkBreakers = [];
 var activity = {};
+var notification;
 
 initialiseBoard();
 
@@ -35,9 +36,14 @@ function setup() {
     boardData.on('value',
         data => {
             if (data.val() && !checkMate) {
+                let result = data.val();
+
+                if (player.side && result.turn != board.turn && result.turn.name == player.side.name && activity[player.side.name] === false)
+                    var notification = new Notification("Chess", { tag: "yourMove", body: "Your opponent has moved - it's your turn!", icon: "https://placekitten.com/200/300", renotify: true })
+
                 console.table('Incoming boardData:');
-                console.log(data.val());
-                board.updateData(data.val());
+                console.log(result);
+                board.updateData(result);
                 loaded = true;
             }
         },
@@ -338,7 +344,8 @@ function setPlayerActivity(bool) {
     }
 }
 function setAllActivity(bool) {
-    for (let side of activity)
+    console.log(activity)
+    for (let side in activity)
         side.active = bool;
     console.log("Reset Player Activity:")
     console.log(activity)
@@ -358,4 +365,8 @@ function playerLeave() {
 }
 function playerReturn() {
     setPlayerActivity(true);
+
+    if (notification)
+        setTimeout(notification.close.bind(notification), 1000);
+
 }
