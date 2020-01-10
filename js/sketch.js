@@ -336,6 +336,7 @@ function initialiseBoard() {
     var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
         // new Pawn(blackSide, G, 3),
+        new Pawn(blackSide, A, 7),
         new Pawn(blackSide, B, 7),
         new Pawn(blackSide, C, 7),
         new Pawn(blackSide, D, 7),
