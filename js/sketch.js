@@ -365,6 +365,9 @@ function playerLeave() {
 }
 function playerReturn() {
     setPlayerActivity(true);
+    boardData.once('value').then((data) => {
+        board.updateData(data.val());
+    })
 
     if (notification)
         setTimeout(notification.close.bind(notification), 1000);
