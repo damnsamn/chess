@@ -94,8 +94,9 @@ class Piece {
     }
 
     blockCheckMoves() {
-        for (let i = 0; i < this.moves.length; i++) {
-            let mockMove = this.beginMove(this.moves[i].x, this.moves[i].y);
+        let i = 0;
+        for (let move of this.moves) {
+            let mockMove = this.beginMove(move.x, move.y);
             let currentCheck = board.check;
 
             for (let king of getPiecesOfType("KING"))
@@ -104,6 +105,8 @@ class Piece {
 
             if (board.check)
                 this.moves.splice(i, 1);
+            else
+                i++;
 
             board.check = currentCheck;
             this.revertMove(mockMove.original, mockMove.destination);
@@ -175,18 +178,25 @@ class Piece {
         // show *which* piece last moved
         board.lastMove.push({ x: this.position.index.x, y: this.position.index.y });
 
-        // Deselect on move
-        player.selectedPiece = Null;
+        if (this.type == "PAWN")
+            if ((this.side.name == board.sides[0].name && this.position.y == 8) || (this.side.name == board.sides[1].name && this.position.y == 1))
+                promotion = this;
 
-        if (board.isFirstMove)
-            board.isFirstMove = false;
 
-        // Change turn
-        board.turn = this.side.enemy;
+        if (!promotion) {
+            // Deselect on move
+            player.selectedPiece = Null;
 
-        console.log("sending data:")
-        console.log(board)
-        boardData.set(board);
+            if (board.isFirstMove)
+                board.isFirstMove = false;
+
+            // Change turn
+            board.turn = this.side.enemy;
+
+            console.log("sending data:")
+            console.log(board)
+            boardData.set(board);
+        }
 
     }
 
