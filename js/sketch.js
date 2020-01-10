@@ -338,7 +338,7 @@ function setPlayerActivity(bool) {
     }
 }
 function setAllActivity(bool) {
-    for (let side of activity)
+    for (let side in activity)
         side.active = bool;
     console.log("Reset Player Activity:")
     console.log(activity)
