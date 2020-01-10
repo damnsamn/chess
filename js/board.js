@@ -1,5 +1,6 @@
 class Board {
     constructor(isFirstMove = false) {
+        this.active = false;
         this.players = [];
         this.sides = [];
         this.turn = Null;
@@ -105,26 +106,26 @@ class Board {
 
         text(glyphs.king, -marginX / 1.5, -marginY / 1.5);
         strokeWeight(1.5);
-        if (checkPlayerByName(board.sides[0].name)) {
+        if (board.sides[0].active) {
             fill(colors.green);
             stroke(colors.green);
         } else {
             fill(bg);
             stroke(255, 255, 255, 100);
         }
-        // circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4, circleSize);
+        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4, circleSize);
 
         fill(board.sides[1].color);
         stroke(board.sides[0].color);
         text(glyphs.king, -marginX / 1.5, -marginY / 1.5 + statusIconSize * 1.5);
-        if (checkPlayerByName(board.sides[1].name)) {
+        if (board.sides[1].active) {
             fill(colors.green);
             stroke(colors.green);
         } else {
             fill(bg);
             stroke(255, 255, 255, 100);
         }
-        // circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4 + statusIconSize * 1.5, circleSize);
+        circle(-marginX / 1.5 + circleSize * 1.75, -marginY / 1.5 + circleSize / 4 + statusIconSize * 1.5, circleSize);
 
 
 
@@ -215,6 +216,8 @@ class Board {
                     this[key] = value;
                     break;
             }
+        if (!board.active)
+            player.side = null;
 
         // set check
         for (let king of getPiecesOfType("KING")) {

@@ -42,24 +42,6 @@ function setup() {
         },
         err => console.log(err)
     );
-    playerData.on('value',
-        data => {
-            if (data.val()) {
-                console.table('incoming playerData:');
-                console.log(data.val());
-                updatePlayers(data.val());
-            }
-            else {
-                player = {
-                    side: null,
-                    gridMouse: {},
-                    selectedPiece: null,
-                    view: null
-                }
-            }
-        },
-        err => console.log(err)
-    );
 }
 
 function draw() {
@@ -77,6 +59,7 @@ function draw() {
 
         if (player.side) {
             push();
+            buttons.resetBoard.color = color(colors.red);
             buttons.resetBoard.draw(width - 150, 15, 125, 35)
             translate(marginX, marginY)
             if (player.view == board.sides[1].name) {
@@ -126,13 +109,15 @@ function draw() {
         push();
         fill(0, 0, 0, 175)
         noStroke();
-        rect(-marginX, -marginY, width, height);
+        rect(0, 0, width, height);
         fill(255);
         textSize(30);
         textAlign(CENTER, CENTER);
-        text(`CHECKMATE`, boardSize / 2, boardSize / 2 - 30);
+        text(`CHECKMATE`, width / 2, height / 2 - 30);
         textSize(20);
-        text(`${board.check.side.enemy.name} is victorious!`, boardSize / 2, boardSize / 2 + 30);
+        text(`${board.check.side.enemy.name} is victorious!`, width / 2, height / 2 + 30);
+        buttons.resetBoard.color = lighten(color(colors.red), 0.25);
+        buttons.resetBoard.draw(width / 2 - 62.5, height - 75, 125, 35)
         pop();
     }
 }
@@ -140,30 +125,36 @@ function draw() {
 
 // Input Events
 function mousePressed() {
-    if (player.side) {
-        buttons.resetBoard.catchClick(resetBoard);
+    if (!checkMate) {
+        if (player.side) {
+            buttons.resetBoard.catchClick(resetBoard);
 
-        if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
-            if (board.turn.name == player.side.name) {
-                let selection = player.selectedPiece;
-                selectPieceAtMouse();
-                if (selection && selection.moves.length)
-                    selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+            if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
+                if (player.side && board.turn.name == player.side.name) {
+                    let selection = player.selectedPiece;
+                    selectPieceAtMouse();
+                    if (selection && selection.moves.length)
+                        selection.moveTo(player.gridMouse.x, player.gridMouse.y);
+                }
             }
-        }
-    } else {
+        } else {
             buttons.selectWhite.catchClick(() => {
                 player.side = board.sides[0];
                 player.view = board.sides[0].name;
-                addPlayer(player.side.name);
+                board.active = true;
+                setPlayerActivity(true);
             });
 
             buttons.selectBlack.catchClick(() => {
                 player.side = board.sides[1];
                 player.view = board.sides[1].name;
-                addPlayer(player.side.name);
+                board.active = true;
+                setPlayerActivity(true);
             });
         }
+    } else {
+        buttons.resetBoard.catchClick(resetBoard);
+    }
 }
 
 function mouseClicked() {
@@ -211,7 +202,7 @@ function mouseGrid() {
 }
 
 function selectPieceAtMouse() {
-    if (player && player.gridMouse.x >= 0 && player.gridMouse.x <= 7 && player.gridMouse.y >= 0 && player.gridMouse.y <= 7) {
+    if (player && player.gridMouse.x >= 1 && player.gridMouse.x <= 8 && player.gridMouse.y >= 1 && player.gridMouse.y <= 8) {
         let selection = board.state[player.gridMouse.x - 1][player.gridMouse.y - 1];
 
         if (selection == Null)
@@ -229,15 +220,6 @@ function selectPieceAtMouse() {
             console.log(player.selectedPiece);
         }
     }
-}
-
-function darken(c, s) {
-    s = constrain(s, 0, 1);
-    let r = s * red(c);
-    let g = s * green(c);
-    let b = s * blue(c);
-
-    return color(r, g, b);
 }
 
 function getPieceAtCoordinate(col, row) {
@@ -271,8 +253,9 @@ function getSideAtCoordinate(col, row) {
 function resetBoard() {
     boardData.remove();
     initialiseBoard();
-    players = [];
-    playerData.set(players);
+    setAllActivity(false);
+    player.side = null;
+    board.active = false;
     console.log("sending data:")
     boardData.set(board);
     checkMate = false;
@@ -331,45 +314,35 @@ function setupGlyphStyle(size = iconSize) {
     textAlign(CENTER, CENTER)
 }
 
-function updatePlayers(data) {
-    players = data;
+function setPlayerActivity(bool) {
+    if (player.side) {
+        for (let side of board.sides)
+            if (side.name == player.side.name)
+                side.active = bool;
+        console.log("Player Activity Changed:")
+        console.log(board)
+        boardData.set(board);
+    }
 }
-
-function addPlayer(player) {
-    players.push(player);
-    playerData.set(players);
-}
-
-function checkPlayerByName(playerName) {
-    var result = false;
-    for (let p of players)
-        if (p == playerName)
-            result = true;
-    return result;
+function setAllActivity(bool) {
+    for (let side of board.sides)
+        side.active = bool;
+    console.log("Reset Player Activity:")
+    console.log(board)
+    boardData.set(board);
 }
 
 // // Remove player when closing the window/refreshing
-// window.addEventListener('beforeunload', playerLeave);
-// // Remove player when window loses focus (mobile OR desktop)
-// window.addEventListener('blur', playerLeave);
-// // Re-add player when window regains focus
-// window.addEventListener('focus', playerReturn);
+window.addEventListener('beforeunload', playerLeave);
+// Remove player when window loses focus (mobile OR desktop)
+window.addEventListener('blur', playerLeave);
+// Re-add player when window regains focus
+window.addEventListener('focus', playerReturn);
 
 
 function playerLeave() {
-    if (player.side) {
-        for (let p = 0; p < players.length; p++)
-            if (players[p] == player.side.name)
-                players.splice(p, 1);
-
-        playerData.set(players);
-    }
+    setPlayerActivity(false);
 }
 function playerReturn() {
-    if (player.side) {
-        if (!players.includes(player.side.name)) {
-            players.push(player.side.name);
-            playerData.set(players);
-        }
-    }
+    setPlayerActivity(true);
 }

@@ -2,6 +2,7 @@ class Side {
     constructor(name, c) {
         this.name = name;
         this.color = c;
+        this.active = Null;
     }
 
     definePieces(array) {

@@ -53,7 +53,7 @@ var buttons = {
     }),
     resetBoard: new Button((x, y, self) => {
         textSize(16);
-        fill(colors.red);
+        fill(self.color);
         noStroke();
         textAlign(CENTER, CENTER);
         text("RESET BOARD", self.width / 2, self.height / 2);

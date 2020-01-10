@@ -18,3 +18,25 @@ function createArray(len, itm) {
     }
     return arr;
 }
+
+function darken(c, s) {
+    s = constrain(s, 0, 1);
+    let r = s * red(c);
+    let g = s * green(c);
+    let b = s * blue(c);
+
+    return color(r, g, b);
+}
+
+function lighten(c, s) {
+    s = constrain(s, 0, 1);
+    let rDiff = 255 - red(c);
+    let gDiff = 255 - green(c);
+    let bDiff = 255 - blue(c);
+
+    let r = red(c) + rDiff * s;
+    let g = green(c) + gDiff * s;
+    let b = blue(c) + bDiff * s;
+
+    return color(r, g, b);
+}
