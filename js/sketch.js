@@ -66,6 +66,7 @@ function draw() {
     rect(0, 0, boardSize + marginX * 2, boardSize + marginY * 2);
 
     select("body").style("background", bg);
+    selectAll("meta")[2].attribute("content", bg);
 
     if (loaded) {
 
