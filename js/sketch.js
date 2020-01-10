@@ -104,10 +104,10 @@ function draw() {
                 let iconW = squareSize;
                 let iconH = squareSize * 1.25;
 
-                buttons.promote.queen.draw(width / 2 - iconW * 3.5, height / 2 - iconH / 2, iconW, iconH, true);
-                buttons.promote.rook.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH, true);
-                buttons.promote.bishop.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH, true);
-                buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH, true);
+                buttons.promote.queen.draw(width / 2 - iconW * 3.5, height / 2 - iconH / 2, iconW, iconH);
+                buttons.promote.rook.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
+                buttons.promote.bishop.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
+                buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH);
 
                 pop();
             }
@@ -302,6 +302,7 @@ function resetBoard() {
     setAllActivity(false);
     player.side = null;
     board.active = false;
+    promotion = false;
     console.log("sending data:")
     boardData.set(board);
     checkMate = false;
@@ -411,7 +412,7 @@ function promote(piece, target) {
             piece = new Knight(piece.side, piece.position.x, piece.position.y);
             break;
     }
-    debugger;
+
     board.state[piece.position.index.x][piece.position.index.y] = piece;
 
     piece.getMoves();
@@ -423,7 +424,6 @@ function promote(piece, target) {
     if (board.isFirstMove)
         board.isFirstMove = false;
 
-    // Change turn
     board.turn = piece.side.enemy;
 
     console.log("sending data:")

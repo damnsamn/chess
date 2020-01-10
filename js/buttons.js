@@ -59,28 +59,28 @@ var buttons = {
         text("RESET BOARD", self.width / 2, self.height / 2 - 16 / 4);
     }),
     promote: {
-        queen: new Button ((x, y, self) => {
+        queen: new Button((x, y, self) => {
             setupGlyphStyle(squareSize);
-            fill(colors.red);
-            noStroke();
+            fill(promotion.side.color);
+            stroke(promotion.side.enemy.color);
             text(glyphs.queen, self.width / 2, self.height / 2);
         }),
-        rook: new Button ((x, y, self) => {
+        rook: new Button((x, y, self) => {
             setupGlyphStyle(squareSize);
-            fill(colors.red);
-            noStroke();
+            fill(promotion.side.color);
+            stroke(promotion.side.enemy.color);
             text(glyphs.rook, self.width / 2, self.height / 2);
         }),
-        bishop: new Button ((x, y, self) => {
+        bishop: new Button((x, y, self) => {
             setupGlyphStyle(squareSize);
-            fill(colors.red);
-            noStroke();
+            fill(promotion.side.color);
+            stroke(promotion.side.enemy.color);
             text(glyphs.bishop, self.width / 2, self.height / 2);
         }),
-        knight: new Button ((x, y, self) => {
+        knight: new Button((x, y, self) => {
             setupGlyphStyle(squareSize);
-            fill(colors.red);
-            noStroke();
+            fill(promotion.side.color);
+            stroke(promotion.side.enemy.color);
             text(glyphs.knight, self.width / 2, self.height / 2);
         }),
 
