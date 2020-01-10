@@ -26,9 +26,9 @@ function setup() {
     createCanvas(w, h);
 
     colors = {
-        red: color("#bd2d2d"),
-        blue: color("#43ace6"),
-        green: color("#4a962c")
+        red: "#bd2d2d",
+        blue: "#43ace6",
+        green: "#4a962c"
     }
     textFont(fontText);
 

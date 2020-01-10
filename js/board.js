@@ -34,19 +34,23 @@ class Board {
             rect(0, 0, squareSize, squareSize);
 
             if (board.lastMove.length && ((board.lastMove[1].x == x - 1 && board.lastMove[1].y == y - 1) || (board.lastMove[0].x == x - 1 && board.lastMove[0].y == y - 1))) {
+                push();
                 let c = color(colors.blue);
                 c.setAlpha(75);
                 fill(c);
                 rect(0, 0, squareSize, squareSize);
+                pop();
             }
 
 
             if (board.check) {
                 if (board.check.position.x == x && board.check.position.y == y) {
+                    push();
                     let c = color(colors.red);
                     c.setAlpha(115);
                     fill(c);
                     rect(0, 0, squareSize, squareSize);
+                    pop();
                 }
             }
 

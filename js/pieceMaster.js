@@ -38,7 +38,7 @@ class Piece {
         if (this.moves) {
             let moves = Object.values(this.moves)
             for (let move of moves) {
-                let c = board.state[move.x][move.y] == Null ? colors.blue : colors.red;
+                let c = board.state[move.x][move.y] == Null ? color(colors.blue) : color(colors.red);
                 push();
                 translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
 
