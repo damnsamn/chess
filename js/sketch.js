@@ -407,7 +407,7 @@ function promote(piece, target) {
         case "BISHOP":
             piece = new Bishop(piece.side, piece.position.x, piece.position.y);
             break;
-        case "Knight":
+        case "KNIGHT":
             piece = new Knight(piece.side, piece.position.x, piece.position.y);
             break;
     }
