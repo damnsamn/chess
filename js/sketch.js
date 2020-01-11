@@ -102,14 +102,15 @@ function draw() {
                         increment *= -1;
                     }
                     if (player.view == board.sides[1].name) {
+                        increment *= -1;
                         rotate(PI);
                         translate(0, -height + marginY / 1.5);
                     }
                     setupGlyphStyle(20);
                     strokeWeight(3);
                     for (let piece of side.graveyard) {
-                        fill(side.color);
-                        stroke(side.enemy.color);
+                        fill(side.enemy.color);
+                        stroke(side.color);
                         text(setGlyph(piece), y * 15, 0);
                         y += increment;
                     }
