@@ -10,7 +10,7 @@ class Piece {
                 y: posY - 1
             }
         }
-        this.glyph = this.setGlyph();
+        this.glyph = setGlyph(this.type);
         this.moves = moves;
         this.moved = moved;
     }
@@ -164,12 +164,12 @@ class Piece {
 
                 let mockMove = this.beginMove(col - 1, row - 1);
 
-                this.commitMove(mockMove.original);
+                this.commitMove(mockMove.original, mockMove.destination);
             }
         }
     }
 
-    commitMove(original) {
+    commitMove(original, destination) {
         // Add lastMove ghost
         board.lastMove = [{ x: original.x, y: original.y }];
 
@@ -189,6 +189,9 @@ class Piece {
 
             if (board.isFirstMove)
                 board.isFirstMove = false;
+
+            if (destination.piece != Null)
+                this.grave(destination.piece.type);
 
             // Change turn
             board.turn = this.side.enemy;
@@ -229,20 +232,11 @@ class Piece {
             }, n);
     }
 
-    setGlyph() {
-        switch (this.type) {
-            case "PAWN":
-                return glyphs.pawn;
-            case "ROOK":
-                return glyphs.rook;
-            case "KNIGHT":
-                return glyphs.knight;
-            case "BISHOP":
-                return glyphs.bishop;
-            case "QUEEN":
-                return glyphs.queen;
-            case "KING":
-                return glyphs.king;
-        }
+    grave(pieceType) {
+        let side = board.sides[0].name == this.side.name ? board.sides[0] : board.sides[1];
+        if (!side.graveyard)
+            side.graveyard = [];
+
+        side.graveyard.push(pieceType);
     }
 }

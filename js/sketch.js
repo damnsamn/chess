@@ -87,6 +87,37 @@ function draw() {
             if (player.selectedPiece)
                 player.selectedPiece.showAvailableMoves();
 
+            if (!mobile) {
+                let x = 0;
+                let increment = 1;
+                for (let side of board.sides) {
+                    let y = 0;
+                    push();
+                    if (x == 0) {
+                        translate(0, -marginY / 1.5);
+                        textAlign(LEFT, CENTER);
+                    } else {
+                        translate(boardSize, -marginY / 1.5)
+                        textAlign(RIGHT, CENTER);
+                        increment *= -1;
+                    }
+                    if (player.view == board.sides[1].name) {
+                        rotate(PI);
+                        translate(0, -height + marginY / 1.5);
+                    }
+                    setupGlyphStyle(20);
+                    strokeWeight(3);
+                    for (let piece of side.graveyard) {
+                        fill(side.color);
+                        stroke(side.enemy.color);
+                        text(setGlyph(piece), y * 15, 0);
+                        y += increment;
+                    }
+                    pop();
+                    x++;
+                }
+            }
+
 
             if (promotion) {
                 push();
@@ -424,6 +455,9 @@ function promote(piece, target) {
     if (board.isFirstMove)
         board.isFirstMove = false;
 
+    if (destination != Null)
+        this.side.graveyard.push(destination.type);
+
     board.turn = piece.side.enemy;
 
     console.log("sending data:")
@@ -431,3 +465,21 @@ function promote(piece, target) {
     boardData.set(board);
 }
 
+
+
+function setGlyph(type) {
+    switch (type) {
+        case "PAWN":
+            return glyphs.pawn;
+        case "ROOK":
+            return glyphs.rook;
+        case "KNIGHT":
+            return glyphs.knight;
+        case "BISHOP":
+            return glyphs.bishop;
+        case "QUEEN":
+            return glyphs.queen;
+        case "KING":
+            return glyphs.king;
+    }
+}

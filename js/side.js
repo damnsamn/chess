@@ -3,6 +3,7 @@ class Side {
         this.name = name;
         this.color = c;
         this.active = Null;
+        this.graveyard = Null;
     }
 
     definePieces(array) {
@@ -20,6 +21,5 @@ class Side {
             name: side.name,
             color: side.color
         }
-
     }
 }
