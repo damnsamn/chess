@@ -94,19 +94,19 @@ class Piece {
     }
 
     blockCheckMoves() {
-        let i = 0;
-        for (let move of this.moves) {
-            let mockMove = this.beginMove(move.x, move.y);
+        for (let i = 0; i < this.moves.length; i++) {
+            // for (let move of this.moves) {
+            let mockMove = this.beginMove(this.moves[i].x, this.moves[i].y);
             let currentCheck = board.check;
 
             for (let king of getPiecesOfType("KING"))
                 if (king.side.name == this.side.name)
                     king.checkLoop();
 
-            if (board.check)
+            if (board.check) {
                 this.moves.splice(i, 1);
-            else
-                i++;
+                i--;
+            }
 
             board.check = currentCheck;
             this.revertMove(mockMove.original, mockMove.destination);

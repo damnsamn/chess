@@ -100,10 +100,10 @@ function draw() {
                         translate(boardSize, -marginY / 1.5)
                         textAlign(RIGHT, CENTER);
                         increment *= -1;
-                        if (player.view == board.sides[1].name)
-                            increment *= -1;
                     }
                     if (player.view == board.sides[1].name) {
+                        if (x == 0)
+                            increment *= -1;
                         rotate(PI);
                         translate(0, -height + marginY / 1.5);
                     }
@@ -348,7 +348,6 @@ function initialiseBoard() {
 
     var whiteSide = new Side("White", "#EEEEEE");
     whiteSide.definePieces([
-        // new Pawn(whiteSide, A, 6),
         new Pawn(whiteSide, A, 2),
         new Pawn(whiteSide, B, 2),
         new Pawn(whiteSide, C, 2),
@@ -369,7 +368,6 @@ function initialiseBoard() {
 
     var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
-        // new Pawn(blackSide, G, 3),
         new Pawn(blackSide, A, 7),
         new Pawn(blackSide, B, 7),
         new Pawn(blackSide, C, 7),
