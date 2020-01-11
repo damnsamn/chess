@@ -100,9 +100,10 @@ function draw() {
                         translate(boardSize, -marginY / 1.5)
                         textAlign(RIGHT, CENTER);
                         increment *= -1;
+                        if (player.view == board.sides[1].name)
+                            increment *= -1;
                     }
                     if (player.view == board.sides[1].name) {
-                        increment *= -1;
                         rotate(PI);
                         translate(0, -height + marginY / 1.5);
                     }
