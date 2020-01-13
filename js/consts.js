@@ -22,6 +22,14 @@ const iconFontPath = 'assets/fa-solid-900.ttf';
 const textFontPath = 'assets/RobotoMono-Bold.ttf';
 const iconSize = squareSize / 1.5;
 
+// Type strings
+const PAWN = "PAWN";
+const ROOK = "ROOK";
+const KNIGHT = "KNIGHT";
+const BISHOP = "BISHOP";
+const QUEEN = "QUEEN";
+const KING = "KING";
+
 // Glyphs object
 const glyphs = {
     pawn: "\u{F443}",

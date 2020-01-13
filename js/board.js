@@ -167,9 +167,30 @@ class Board {
 
     checkPositionIsOccupied(x, y) {
         if (board.state[x] && board.state[x][y])
-            return true;
+            return board.state[x][y];
         else
             return false;
+    }
+
+    castle(king, rook) {
+        if (king.side.name != rook.side.name || king.moved || rook.moved || board.check == king)
+            console.error(`Invalid Castling attempt`)
+        else {
+            let diffX = rook.position.x - king.position.x;
+            let inc = diffX / abs(diffX);
+            console.log(`diffX: ${diffX}`);
+
+            let legal = true;
+            for (let x = king.position.index.x + inc; x != rook.position.index.x; x += inc) {
+                // console.log(`Check at [${colChar(x + 1)}, ${king.position.y}]: ${king.getCheckAt(x, king.position.index.y)}`);
+                if (king.getCheckAt(x, king.position.index.y))
+                    legal = false;
+            }
+
+            if (legal) {
+                // TODO - Castling moves
+            }
+        }
     }
 
     updateData(data) {
@@ -182,27 +203,27 @@ class Board {
                         for (let i = 0; i < array.length; i++) {
                             if (array[i])
                                 switch (array[i].type) {
-                                    case "PAWN":
-                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
+                                    case PAWN:
+                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved, array[i].enPassant));
                                         break;
 
-                                    case "ROOK":
+                                    case ROOK:
                                         this[key][index].push(new Rook(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "KNIGHT":
+                                    case KNIGHT:
                                         this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "BISHOP":
+                                    case BISHOP:
                                         this[key][index].push(new Bishop(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "QUEEN":
+                                    case QUEEN:
                                         this[key][index].push(new Queen(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "KING":
+                                    case KING:
                                         this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved, array[i].potentialAttackers));
                                         break;
 
@@ -224,7 +245,7 @@ class Board {
             player.side = null;
 
         // set check
-        for (let king of getPiecesOfType("KING")) {
+        for (let king of getPiecesOfType(KING)) {
             king.checkLoop();
         }
 

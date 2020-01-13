@@ -225,10 +225,10 @@ function mousePressed() {
         }
     } else if (promotion) {
         console.log("PROMOTION CLICK")
-        buttons.promote.queen.catchClick(() => { promote(promotion, "QUEEN") })
-        buttons.promote.rook.catchClick(() => { promote(promotion, "ROOK") })
-        buttons.promote.bishop.catchClick(() => { promote(promotion, "BISHOP") })
-        buttons.promote.knight.catchClick(() => { promote(promotion, "KNIGHT") })
+        buttons.promote.queen.catchClick(() => { promote(promotion, QUEEN) })
+        buttons.promote.rook.catchClick(() => { promote(promotion, ROOK) })
+        buttons.promote.bishop.catchClick(() => { promote(promotion, BISHOP) })
+        buttons.promote.knight.catchClick(() => { promote(promotion, KNIGHT) })
 
     } else {
         buttons.resetBoard.catchClick(resetBoard);
@@ -347,44 +347,47 @@ function initialiseBoard() {
 
     var whiteSide = new Side("White", "#EEEEEE");
     whiteSide.definePieces([
-        // new Pawn(whiteSide, A, 6),
-        new Pawn(whiteSide, A, 2),
-        new Pawn(whiteSide, B, 2),
-        new Pawn(whiteSide, C, 2),
-        new Pawn(whiteSide, D, 2),
-        new Pawn(whiteSide, E, 2),
-        new Pawn(whiteSide, F, 2),
-        new Pawn(whiteSide, G, 2),
-        new Pawn(whiteSide, H, 2),
         new Rook(whiteSide, A, 1),
-        new Knight(whiteSide, B, 1),
-        new Bishop(whiteSide, C, 1),
-        new Queen(whiteSide, D, 1),
-        new King(whiteSide, E, 1), // E1
-        new Bishop(whiteSide, F, 1),
-        new Knight(whiteSide, G, 1),
-        new Rook(whiteSide, H, 1)
+        new King(whiteSide, E, 1),
+        new Rook(whiteSide, H, 1),
+        // new Pawn(whiteSide, A, 2),
+        // new Pawn(whiteSide, B, 2),
+        // new Pawn(whiteSide, C, 2),
+        // new Pawn(whiteSide, D, 2),
+        // new Pawn(whiteSide, E, 2),
+        // new Pawn(whiteSide, F, 2),
+        // new Pawn(whiteSide, G, 2),
+        // new Pawn(whiteSide, H, 2),
+        // new Rook(whiteSide, A, 1),
+        // new Knight(whiteSide, B, 1),
+        // new Bishop(whiteSide, C, 1),
+        // new Queen(whiteSide, D, 1),
+        // new King(whiteSide, E, 1), // E1
+        // new Bishop(whiteSide, F, 1),
+        // new Knight(whiteSide, G, 1),
+        // new Rook(whiteSide, H, 1)
     ]);
 
     var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
-        // new Pawn(blackSide, G, 3),
-        new Pawn(blackSide, A, 7),
-        new Pawn(blackSide, B, 7),
-        new Pawn(blackSide, C, 7),
-        new Pawn(blackSide, D, 7),
-        new Pawn(blackSide, E, 7),
-        new Pawn(blackSide, F, 7),
-        new Pawn(blackSide, G, 7),
-        new Pawn(blackSide, H, 7),
-        new Rook(blackSide, A, 8),
-        new Knight(blackSide, B, 8),
-        new Bishop(blackSide, C, 8),
-        new Queen(blackSide, D, 8), // D8
         new King(blackSide, E, 8),
-        new Bishop(blackSide, F, 8),
-        new Knight(blackSide, G, 8),
-        new Rook(blackSide, H, 8)
+        new Queen(blackSide, G, 7),
+        // new Pawn(blackSide, A, 7),
+        // new Pawn(blackSide, B, 7),
+        // new Pawn(blackSide, C, 7),
+        // new Pawn(blackSide, D, 7),
+        // new Pawn(blackSide, E, 7),
+        // new Pawn(blackSide, F, 7),
+        // new Pawn(blackSide, G, 7),
+        // new Pawn(blackSide, H, 7),
+        // new Rook(blackSide, A, 8),
+        // new Knight(blackSide, B, 8),
+        // new Bishop(blackSide, C, 8),
+        // new Queen(blackSide, D, 8), // D8
+        // new King(blackSide, E, 8),
+        // new Bishop(blackSide, F, 8),
+        // new Knight(blackSide, G, 8),
+        // new Rook(blackSide, H, 8)
     ]);
     player.view = board.sides[0].name;
 }
@@ -431,16 +434,16 @@ function playerReturn() {
 function promote(piece, target) {
 
     switch (target) {
-        case "QUEEN":
+        case QUEEN:
             piece = new Queen(piece.side, piece.position.x, piece.position.y);
             break;
-        case "ROOK":
+        case ROOK:
             piece = new Rook(piece.side, piece.position.x, piece.position.y);
             break;
-        case "BISHOP":
+        case BISHOP:
             piece = new Bishop(piece.side, piece.position.x, piece.position.y);
             break;
-        case "KNIGHT":
+        case KNIGHT:
             piece = new Knight(piece.side, piece.position.x, piece.position.y);
             break;
     }
@@ -470,17 +473,17 @@ function promote(piece, target) {
 
 function setGlyph(type) {
     switch (type) {
-        case "PAWN":
+        case PAWN:
             return glyphs.pawn;
-        case "ROOK":
+        case ROOK:
             return glyphs.rook;
-        case "KNIGHT":
+        case KNIGHT:
             return glyphs.knight;
-        case "BISHOP":
+        case BISHOP:
             return glyphs.bishop;
-        case "QUEEN":
+        case QUEEN:
             return glyphs.queen;
-        case "KING":
+        case KING:
             return glyphs.king;
     }
 }

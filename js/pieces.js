@@ -1,29 +1,66 @@
 class Pawn extends Piece {
-    constructor(side, gridX, gridY, moves = [], moved = false) {
-        super("PAWN", side, gridX, gridY, moves, moved);
+    constructor(side, gridX, gridY, moves = [], moved = false, enPassant = false) {
+        super(PAWN, side, gridX, gridY, moves, moved);
+        this.enPassant = enPassant;
     }
 
     getMoves() {
+        this.yDir = board.sides[0].name == this.side.name ? 1 : -1;
+        this.yStep = this.position.index.y + this.yDir;
+
+
         this.moves = [];
-
-        let yDir = board.sides[0].name == this.side.name ? 1 : -1;
-        let yStep = this.position.index.y + yDir;
-
+        let target, path;
         // Forward
-        if (!board.checkPositionIsOccupied(this.position.index.x, yStep) && board.state[this.position.index.x][yStep] !== undefined)
-            this.addMove(this.position.index.x, yStep);
+        target = board.checkPositionIsOccupied(this.position.index.x, this.yStep);
+        if (!target)
+            this.addMove(this.position.index.x, this.yStep);
 
         // Two-step
-        if (!this.moved && !board.checkPositionIsOccupied(this.position.index.x, yStep) && !board.checkPositionIsOccupied(this.position.index.x, yStep + yDir))
-            this.addMove(this.position.index.x, yStep + yDir);
+        target = board.checkPositionIsOccupied(this.position.index.x, this.yStep + this.yDir);
+        path = board.checkPositionIsOccupied(this.position.index.x, this.yStep);
+        if (!this.moved && !path && !target)
+            this.addMove(this.position.index.x, this.yStep + this.yDir);
 
         // Capture Left
-        if (board.checkPositionIsOccupied(this.position.index.x - 1, yStep) && board.state[this.position.index.x - 1][yStep].side.name != this.side.name)
-            this.addMove(this.position.index.x - 1, yStep);
+        target = board.checkPositionIsOccupied(this.position.index.x - 1, this.yStep);
+        if (target && target.side.name != this.side.name)
+            this.addMove(this.position.index.x - 1, this.yStep);
 
         // Capture Right
-        if (board.checkPositionIsOccupied(this.position.index.x + 1, yStep) && board.state[this.position.index.x + 1][yStep].side.name != this.side.name)
-            this.addMove(this.position.index.x + 1, yStep);
+        target = board.checkPositionIsOccupied(this.position.index.x + 1, this.yStep);
+        if (target && target.side.name != this.side.name)
+            this.addMove(this.position.index.x + 1, this.yStep);
+
+        // En Passant Left
+        target = board.checkPositionIsOccupied(this.position.index.x - 1, this.yStep);
+        path = board.checkPositionIsOccupied(this.position.index.x - 1, this.position.index.y);
+        if (!target &&
+            path &&
+            path.side.name != this.side.name &&
+            path.type == PAWN &&
+            path.enPassant)
+            this.addMove(this.position.index.x - 1, this.yStep, path)
+
+        // En Passant Right
+        target = board.checkPositionIsOccupied(this.position.index.x + 1, this.yStep);
+        path = board.checkPositionIsOccupied(this.position.index.x + 1, this.position.index.y);
+        if (!target &&
+            path &&
+            path.side.name != this.side.name &&
+            path.type == PAWN &&
+            path.enPassant)
+            this.addMove(this.position.index.x + 1, this.yStep, path)
+    }
+
+    setEnPassant(x, y) {
+        boardLoop((x, y) => {
+            if (board.state[x - 1][y - 1].enPassant)
+                board.state[x - 1][y - 1].enPassant = false;
+        })
+        if (x == this.position.index.x && y == this.yStep + this.yDir) {
+            this.enPassant = true;
+        }
     }
 
 
@@ -31,7 +68,7 @@ class Pawn extends Piece {
 
 class Rook extends Piece {
     constructor(side, gridX, gridY, moves = []) {
-        super("ROOK", side, gridX, gridY, moves);
+        super(ROOK, side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -45,12 +82,16 @@ class Rook extends Piece {
                 for (let y = -1; y <= 1; y += 2)
                     this.moveLoop(x, y);
 
+        // if (!this.moved)
+        //     for (let king of getPiecesOfType(KING))
+        //         if (king.side.name == this.side.name && !king.moved)
+
     }
 }
 
 class Knight extends Piece {
     constructor(side, gridX, gridY, moves = []) {
-        super("KNIGHT", side, gridX, gridY, moves);
+        super(KNIGHT, side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -67,12 +108,13 @@ class Knight extends Piece {
                     for (let y = -2; y <= 2; y++)
                         if (y % 2 == 0 && y != -0)
                             this.moveLoop(x, y, 1);
+
     }
 }
 
 class Bishop extends Piece {
     constructor(side, gridX, gridY, moves = []) {
-        super("BISHOP", side, gridX, gridY, moves);
+        super(BISHOP, side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -86,7 +128,7 @@ class Bishop extends Piece {
 
 class Queen extends Piece {
     constructor(side, gridX, gridY, moves = []) {
-        super("QUEEN", side, gridX, gridY, moves);
+        super(QUEEN, side, gridX, gridY, moves);
     }
 
     getMoves() {
@@ -100,7 +142,7 @@ class Queen extends Piece {
 
 class King extends Piece {
     constructor(side, gridX, gridY, moves = [], potentialAttackers = []) {
-        super("KING", side, gridX, gridY, moves);
+        super(KING, side, gridX, gridY, moves);
         this.potentialAttackers = potentialAttackers;
     }
 
@@ -128,12 +170,27 @@ class King extends Piece {
 
         // Perform checkLoop() for each King
         let check = Null;
-        for (let king of getPiecesOfType("KING")) {
+        for (let king of getPiecesOfType(KING)) {
             if (king.checkedBy && king.checkedBy.length)
                 check = king;
         }
         board.check = check;
 
+    }
+
+    getCheckAt(x, y) {
+
+        let mockMove = this.beginMove(x, y);
+        let oldCheck = board.check;
+        this.checkLoop();
+        let newCheck = board.check;
+        board.check = oldCheck;
+        this.revertMove(mockMove.original, mockMove.destination);
+
+        if (newCheck)
+            return true;
+        else
+            return false;
     }
 
     getPotentialAttackers() {

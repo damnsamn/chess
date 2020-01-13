@@ -54,8 +54,11 @@ class Piece {
         }
     }
 
-    addMove(row, col) {
-        this.moves.push({ x: row, y: col });
+    addMove(row, col, victim) {
+        if (victim)
+            this.moves.push({ x: row, y: col, victim: victim });
+        else
+            this.moves.push({ x: row, y: col });
     }
 
 
@@ -64,7 +67,7 @@ class Piece {
     }
 
     getKing() {
-        for (let king of getPiecesOfType("KING"))
+        for (let king of getPiecesOfType(KING))
             if (king.side.name == this.side.name)
                 return king;
     }
@@ -77,7 +80,7 @@ class Piece {
         for (let move of availableMoves) {
             let mockMove = this.beginMove(move.x, move.y);
 
-            for (let king of getPiecesOfType("KING"))
+            for (let king of getPiecesOfType(KING))
                 if (king.side.name == this.side.name)
                     king.checkLoop();
 
@@ -99,7 +102,7 @@ class Piece {
             let mockMove = this.beginMove(move.x, move.y);
             let currentCheck = board.check;
 
-            for (let king of getPiecesOfType("KING"))
+            for (let king of getPiecesOfType(KING))
                 if (king.side.name == this.side.name)
                     king.checkLoop();
 
@@ -155,7 +158,7 @@ class Piece {
         board.state[destination.x][destination.y] = destination.piece;
     }
 
-    moveTo(col, row, commit = true) {
+    moveTo(col, row) {
         let moves = Object.values(this.moves);
 
         // Check col,row correspond to an existing move in this.moves
@@ -164,12 +167,22 @@ class Piece {
 
                 let mockMove = this.beginMove(col - 1, row - 1);
 
+                if (this.type == PAWN)
+                    this.setEnPassant(col - 1, row - 1);
+
+                if (move.victim) {
+                    this.grave(move.victim.type);
+                    board.state[move.victim.position.index.x][move.victim.position.index.y] = Null;
+                }
+
                 this.commitMove(mockMove.original, mockMove.destination);
             }
         }
     }
 
     commitMove(original, destination) {
+        // board.state[this.position.index.x][this.position.index.y] = this;
+
         // Add lastMove ghost
         board.lastMove = [{ x: original.x, y: original.y }];
 
@@ -178,7 +191,7 @@ class Piece {
         // show *which* piece last moved
         board.lastMove.push({ x: this.position.index.x, y: this.position.index.y });
 
-        if (this.type == "PAWN")
+        if (this.type == PAWN)
             if ((this.side.name == board.sides[0].name && this.position.y == 8) || (this.side.name == board.sides[1].name && this.position.y == 1))
                 promotion = this;
 
