@@ -38,7 +38,8 @@ class Piece {
         if (this.moves) {
             let moves = Object.values(this.moves)
             for (let move of moves) {
-                let c = board.state[move.x][move.y] == Null ? color(colors.blue) : color(colors.red);
+                let piece = board.state[move.x][move.y];
+                let c = piece == Null ? color(colors.blue) : piece.side.name == this.side.name ? color(colors.green) : color(colors.red);
                 push();
                 translate(move.x * squareSize, (8 - move.y - 1) * squareSize);
 
@@ -54,11 +55,8 @@ class Piece {
         }
     }
 
-    addMove(row, col, victim) {
-        if (victim)
-            this.moves.push({ x: row, y: col, victim: victim });
-        else
-            this.moves.push({ x: row, y: col });
+    addMove(row, col, param = null) {
+        this.moves.push({ x: row, y: col, param: param });
     }
 
 
@@ -67,7 +65,8 @@ class Piece {
     }
 
     getKing() {
-        for (let king of getPiecesOfType(KING))
+        let kings = getPiecesOfType(KING)
+        for (let king of kings)
             if (king.side.name == this.side.name)
                 return king;
     }
@@ -78,11 +77,11 @@ class Piece {
         this.moves = [];
         let currentCheck = board.check;
         for (let move of availableMoves) {
+            if (move.param == CASTLING)
+                continue;
             let mockMove = this.beginMove(move.x, move.y);
 
-            for (let king of getPiecesOfType(KING))
-                if (king.side.name == this.side.name)
-                    king.checkLoop();
+            this.getKing().checkLoop();
 
             if (board.check != currentCheck) {
                 this.moves.push(move);
@@ -98,25 +97,43 @@ class Piece {
 
     blockCheckMoves() {
         let i = 0;
-        for (let move of this.moves) {
-            let mockMove = this.beginMove(move.x, move.y);
-            let currentCheck = board.check;
+        let This = this;
 
-            for (let king of getPiecesOfType(KING))
-                if (king.side.name == this.side.name)
-                    king.checkLoop();
+        function loop(i) {
 
-            if (board.check)
-                this.moves.splice(i, 1);
-            else
+            if (This.moves[i].param == CASTLING) {
                 i++;
+            } else {
+                let mockMove = This.beginMove(This.moves[i]);
+                let currentCheck = board.check;
 
-            board.check = currentCheck;
-            this.revertMove(mockMove.original, mockMove.destination);
+                This.getKing().checkLoop();
+
+                if (board.check)
+                    This.moves.splice(i, 1);
+                else
+                    i++;
+
+                board.check = currentCheck;
+                This.revertMove(mockMove.original, mockMove.destination);
+            }
+
+            if (i != This.moves.length)
+                loop(i);
         }
+
+        if (this.moves.length)
+            loop(i);
     }
 
-    beginMove(x, y) {
+    beginMove(move, y = null) {
+        if (typeof move == "object") {
+            var x = move.x;
+            y = move.y;
+        } else if (typeof move == "number") {
+            var x = move;
+        }
+
         let This = this;
         let original = {
             piece: This,
@@ -163,19 +180,25 @@ class Piece {
 
         // Check col,row correspond to an existing move in this.moves
         for (let move of moves) {
-            if (col == move.x + 1 && row == move.y + 1) {
+            if (col - 1 == move.x && row - 1 == move.y) {
 
-                let mockMove = this.beginMove(col - 1, row - 1);
+                if (move.param == CASTLING) {
+                    this.doCastling(board.state[move.x][move.y]);
 
-                if (this.type == PAWN)
-                    this.setEnPassant(col - 1, row - 1);
+                } else {
+                    let mockMove = this.beginMove(move.x, move.y);
 
-                if (move.victim) {
-                    this.grave(move.victim.type);
-                    board.state[move.victim.position.index.x][move.victim.position.index.y] = Null;
+                    if (this.type == PAWN)
+                        this.setEnPassant(move.x, move.y);
+
+                    if (move.param instanceof Piece) {
+                        let piece = move.param;
+                        this.grave(piece.type);
+                        board.state[piece.position.index.x][piece.position.index.y] = Null;
+                    }
+
+                    this.commitMove(mockMove.original, mockMove.destination);
                 }
-
-                this.commitMove(mockMove.original, mockMove.destination);
             }
         }
     }
@@ -251,5 +274,58 @@ class Piece {
             side.graveyard = [];
 
         side.graveyard.push(pieceType);
+    }
+
+    getCastling(target) {
+        let king = this.type == KING ? this : target;
+        let rook = this.type == ROOK ? this : target;
+
+        if (king.side.name == rook.side.name && !king.moved && !rook.moved && board.check != king) {
+            let diffX = rook.position.x - king.position.x;
+            let inc = diffX / abs(diffX);
+
+            let legal = true;
+            for (let x = king.position.index.x + inc; x != rook.position.index.x; x += inc) {
+                if (king.getCheckAt(x, king.position.index.y) || getPieceAtCoordinate(x + 1, king.position.index.y + 1))
+                    legal = false;
+            }
+
+            if (legal) {
+                return { x: target.position.index.x, y: target.position.index.y }
+            }
+            else
+                return false;
+        }
+        else return false;
+    }
+
+    doCastling(target) {
+        let king = this.type == KING ? this : target;
+        let rook = this.type == ROOK ? this : target;
+        let diffX = rook.position.x - king.position.x;
+        let inc = diffX / abs(diffX);
+
+        let kingMove = king.beginMove(king.position.index.x + inc * (abs(diffX) - 1), king.position.index.y);
+        let rookMove = rook.beginMove(rook.position.index.x - inc * (abs(diffX) - 1), rook.position.index.y);
+        board.lastMove = [];
+        board.lastMove.push({ x: kingMove.original.x, y: kingMove.original.y })
+        board.lastMove.push({ x: rookMove.original.x, y: rookMove.original.y })
+        board.lastMove.push({ x: kingMove.destination.x, y: kingMove.destination.y })
+        board.lastMove.push({ x: rookMove.destination.x, y: rookMove.destination.y })
+        king.moved = false;
+        rook.moved = true;
+
+        // Deselect on move
+        player.selectedPiece = Null;
+
+        // Change turn
+        board.turn = this.side.enemy;
+
+        if (board.isFirstMove)
+            board.isFirstMove = false;
+
+        console.log("sending data:")
+        console.log(board)
+        boardData.set(board);
     }
 }

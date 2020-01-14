@@ -347,47 +347,47 @@ function initialiseBoard() {
 
     var whiteSide = new Side("White", "#EEEEEE");
     whiteSide.definePieces([
-        new Rook(whiteSide, A, 1),
-        new King(whiteSide, E, 1),
-        new Rook(whiteSide, H, 1),
-        // new Pawn(whiteSide, A, 2),
-        // new Pawn(whiteSide, B, 2),
-        // new Pawn(whiteSide, C, 2),
-        // new Pawn(whiteSide, D, 2),
-        // new Pawn(whiteSide, E, 2),
-        // new Pawn(whiteSide, F, 2),
-        // new Pawn(whiteSide, G, 2),
-        // new Pawn(whiteSide, H, 2),
         // new Rook(whiteSide, A, 1),
-        // new Knight(whiteSide, B, 1),
-        // new Bishop(whiteSide, C, 1),
-        // new Queen(whiteSide, D, 1),
-        // new King(whiteSide, E, 1), // E1
-        // new Bishop(whiteSide, F, 1),
-        // new Knight(whiteSide, G, 1),
-        // new Rook(whiteSide, H, 1)
+        // new King(whiteSide, E, 1),
+        // new Rook(whiteSide, H, 1),
+        new Pawn(whiteSide, A, 2),
+        new Pawn(whiteSide, B, 2),
+        new Pawn(whiteSide, C, 2),
+        new Pawn(whiteSide, D, 2),
+        new Pawn(whiteSide, E, 2),
+        new Pawn(whiteSide, F, 2),
+        new Pawn(whiteSide, G, 2),
+        new Pawn(whiteSide, H, 2),
+        new Rook(whiteSide, A, 1),
+        new Knight(whiteSide, B, 1),
+        new Bishop(whiteSide, C, 1),
+        new Queen(whiteSide, D, 1),
+        new King(whiteSide, E, 1), // E1
+        new Bishop(whiteSide, F, 1),
+        new Knight(whiteSide, G, 1),
+        new Rook(whiteSide, H, 1)
     ]);
 
     var blackSide = new Side("Black", "#21252b");
     blackSide.definePieces([
-        new King(blackSide, E, 8),
-        new Queen(blackSide, G, 7),
-        // new Pawn(blackSide, A, 7),
-        // new Pawn(blackSide, B, 7),
-        // new Pawn(blackSide, C, 7),
-        // new Pawn(blackSide, D, 7),
-        // new Pawn(blackSide, E, 7),
-        // new Pawn(blackSide, F, 7),
-        // new Pawn(blackSide, G, 7),
-        // new Pawn(blackSide, H, 7),
-        // new Rook(blackSide, A, 8),
-        // new Knight(blackSide, B, 8),
-        // new Bishop(blackSide, C, 8),
-        // new Queen(blackSide, D, 8), // D8
         // new King(blackSide, E, 8),
-        // new Bishop(blackSide, F, 8),
-        // new Knight(blackSide, G, 8),
-        // new Rook(blackSide, H, 8)
+        // new Queen(blackSide, H, 8),
+        new Pawn(blackSide, A, 7),
+        new Pawn(blackSide, B, 7),
+        new Pawn(blackSide, C, 7),
+        new Pawn(blackSide, D, 7),
+        new Pawn(blackSide, E, 7),
+        new Pawn(blackSide, F, 7),
+        new Pawn(blackSide, G, 7),
+        new Pawn(blackSide, H, 7),
+        new Rook(blackSide, A, 8),
+        new Knight(blackSide, B, 8),
+        new Bishop(blackSide, C, 8),
+        new Queen(blackSide, D, 8), // D8
+        new King(blackSide, E, 8),
+        new Bishop(blackSide, F, 8),
+        new Knight(blackSide, G, 8),
+        new Rook(blackSide, H, 8)
     ]);
     player.view = board.sides[0].name;
 }

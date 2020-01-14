@@ -33,13 +33,16 @@ class Board {
 
             rect(0, 0, squareSize, squareSize);
 
-            if (board.lastMove.length && ((board.lastMove[1].x == x - 1 && board.lastMove[1].y == y - 1) || (board.lastMove[0].x == x - 1 && board.lastMove[0].y == y - 1))) {
-                push();
-                let c = color(colors.blue);
-                c.setAlpha(75);
-                fill(c);
-                rect(0, 0, squareSize, squareSize);
-                pop();
+            if (board.lastMove.length) {
+                for (let move of board.lastMove)
+                    if (move.x == x - 1 && move.y == y - 1) {
+                        push();
+                        let c = color(colors.blue);
+                        c.setAlpha(75);
+                        fill(c);
+                        rect(0, 0, squareSize, squareSize);
+                        pop();
+                    }
             }
 
 
@@ -170,27 +173,6 @@ class Board {
             return board.state[x][y];
         else
             return false;
-    }
-
-    castle(king, rook) {
-        if (king.side.name != rook.side.name || king.moved || rook.moved || board.check == king)
-            console.error(`Invalid Castling attempt`)
-        else {
-            let diffX = rook.position.x - king.position.x;
-            let inc = diffX / abs(diffX);
-            console.log(`diffX: ${diffX}`);
-
-            let legal = true;
-            for (let x = king.position.index.x + inc; x != rook.position.index.x; x += inc) {
-                // console.log(`Check at [${colChar(x + 1)}, ${king.position.y}]: ${king.getCheckAt(x, king.position.index.y)}`);
-                if (king.getCheckAt(x, king.position.index.y))
-                    legal = false;
-            }
-
-            if (legal) {
-                // TODO - Castling moves
-            }
-        }
     }
 
     updateData(data) {

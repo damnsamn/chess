@@ -67,8 +67,8 @@ class Pawn extends Piece {
 }
 
 class Rook extends Piece {
-    constructor(side, gridX, gridY, moves = []) {
-        super(ROOK, side, gridX, gridY, moves);
+    constructor(side, gridX, gridY, moves = [], moved = false) {
+        super(ROOK, side, gridX, gridY, moves, moved);
     }
 
     getMoves() {
@@ -82,16 +82,20 @@ class Rook extends Piece {
                 for (let y = -1; y <= 1; y += 2)
                     this.moveLoop(x, y);
 
-        // if (!this.moved)
-        //     for (let king of getPiecesOfType(KING))
-        //         if (king.side.name == this.side.name && !king.moved)
+
+
+        if (!this.moved) {
+            let castling = this.getCastling(this.getKing());
+            if (castling)
+                this.addMove(castling.x, castling.y, CASTLING);
+        }
 
     }
 }
 
 class Knight extends Piece {
-    constructor(side, gridX, gridY, moves = []) {
-        super(KNIGHT, side, gridX, gridY, moves);
+    constructor(side, gridX, gridY, moves = [], moved = false) {
+        super(KNIGHT, side, gridX, gridY, moves, moved);
     }
 
     getMoves() {
@@ -113,8 +117,8 @@ class Knight extends Piece {
 }
 
 class Bishop extends Piece {
-    constructor(side, gridX, gridY, moves = []) {
-        super(BISHOP, side, gridX, gridY, moves);
+    constructor(side, gridX, gridY, moves = [], moved = false) {
+        super(BISHOP, side, gridX, gridY, moves, moved);
     }
 
     getMoves() {
@@ -127,8 +131,8 @@ class Bishop extends Piece {
 }
 
 class Queen extends Piece {
-    constructor(side, gridX, gridY, moves = []) {
-        super(QUEEN, side, gridX, gridY, moves);
+    constructor(side, gridX, gridY, moves = [], moved = false) {
+        super(QUEEN, side, gridX, gridY, moves, moved);
     }
 
     getMoves() {
@@ -141,8 +145,8 @@ class Queen extends Piece {
 }
 
 class King extends Piece {
-    constructor(side, gridX, gridY, moves = [], potentialAttackers = []) {
-        super(KING, side, gridX, gridY, moves);
+    constructor(side, gridX, gridY, moves = [], moved = false, potentialAttackers = []) {
+        super(KING, side, gridX, gridY, moves, moved);
         this.potentialAttackers = potentialAttackers;
     }
 
@@ -152,6 +156,17 @@ class King extends Piece {
         for (let x = -1; x <= 1; x++)
             for (let y = -1; y <= 1; y++)
                 this.moveLoop(x, y, 1);
+
+        if (!this.moved)
+            for (let x of [0, 7]) {
+                let piece = board.state[x][this.position.index.y];
+                if (piece && piece.type == ROOK) {
+                    let castling = this.getCastling(piece);
+                    if (castling)
+                        this.addMove(castling.x, castling.y, CASTLING);
+                }
+            }
+
 
         this.checkLoop();
     }

@@ -30,6 +30,8 @@ const BISHOP = "BISHOP";
 const QUEEN = "QUEEN";
 const KING = "KING";
 
+const CASTLING = "CASTLING";
+
 // Glyphs object
 const glyphs = {
     pawn: "\u{F443}",
