@@ -33,13 +33,16 @@ class Board {
 
             rect(0, 0, squareSize, squareSize);
 
-            if (board.lastMove.length && ((board.lastMove[1].x == x - 1 && board.lastMove[1].y == y - 1) || (board.lastMove[0].x == x - 1 && board.lastMove[0].y == y - 1))) {
-                push();
-                let c = color(colors.blue);
-                c.setAlpha(75);
-                fill(c);
-                rect(0, 0, squareSize, squareSize);
-                pop();
+            if (board.lastMove.length) {
+                for (let move of board.lastMove)
+                    if (move.x == x - 1 && move.y == y - 1) {
+                        push();
+                        let c = color(colors.blue);
+                        c.setAlpha(75);
+                        fill(c);
+                        rect(0, 0, squareSize, squareSize);
+                        pop();
+                    }
             }
 
 
@@ -167,7 +170,7 @@ class Board {
 
     checkPositionIsOccupied(x, y) {
         if (board.state[x] && board.state[x][y])
-            return true;
+            return board.state[x][y];
         else
             return false;
     }
@@ -182,27 +185,27 @@ class Board {
                         for (let i = 0; i < array.length; i++) {
                             if (array[i])
                                 switch (array[i].type) {
-                                    case "PAWN":
-                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
+                                    case PAWN:
+                                        this[key][index].push(new Pawn(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved, array[i].enPassant));
                                         break;
 
-                                    case "ROOK":
+                                    case ROOK:
                                         this[key][index].push(new Rook(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "KNIGHT":
+                                    case KNIGHT:
                                         this[key][index].push(new Knight(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "BISHOP":
+                                    case BISHOP:
                                         this[key][index].push(new Bishop(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "QUEEN":
+                                    case QUEEN:
                                         this[key][index].push(new Queen(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved));
                                         break;
 
-                                    case "KING":
+                                    case KING:
                                         this[key][index].push(new King(array[i].side, array[i].position.x, array[i].position.y, array[i].moves, array[i].moved, array[i].potentialAttackers));
                                         break;
 
@@ -224,7 +227,7 @@ class Board {
             player.side = null;
 
         // set check
-        for (let king of getPiecesOfType("KING")) {
+        for (let king of getPiecesOfType(KING)) {
             king.checkLoop();
         }
 
