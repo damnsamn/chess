@@ -12,3 +12,11 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
+
+input {
+	opacity: 0;
+}
+
+input:focus {
+	opacity: 0.5;
+}

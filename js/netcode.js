@@ -11,5 +11,37 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-var boardData = firebase.database().ref('chessData');
+var gameData;
+var boardData = firebase.database().ref('boardData');
 var activityData = firebase.database().ref('activity');
+
+function newGame(password) {
+    // gameData = firebase.database().ref()
+
+    let allGames = [];
+
+    firebase.database().ref().once('value',
+        data => {
+
+            function incrementGame(array, i) {
+                if (array.includes("game" + i)) {
+                    incrementGame(array, i + 1)
+                } else {
+                    gameData = firebase.database().ref("game" + i);
+                    boardData = firebase.database().ref(`${gameData.key}/boardData`);
+                    activityData = firebase.database().ref(`${gameData.key}/activity`);
+                }
+            }
+
+            if (data.val())
+                allGames = Object.keys(data.val());
+            console.log(allGames);
+            let i = 1;
+            incrementGame(allGames, i);
+
+            console.log(gameData.key);
+
+        },
+        err => console.log(err)
+    );
+}

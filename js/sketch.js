@@ -1,3 +1,4 @@
+var canvas;
 var bg = null;
 var colors = {};
 var player = {
@@ -15,6 +16,8 @@ var checkMate = false;
 var checkBreakers = [];
 var activity = {};
 var promotion = false;
+var fieldFocus = null;
+var textInput;
 
 initialiseBoard();
 
@@ -24,7 +27,7 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(w, h);
+    canvas = createCanvas(w, h);
 
     colors = {
         red: "#bd2d2d",
@@ -41,6 +44,11 @@ function setup() {
                 board.updateData(data.val());
                 loaded = true;
             }
+            else if (!data.val()) {
+                newGame("test");
+                initialiseBoard();
+                loaded = true;
+            }
         },
         err => console.log(err)
     );
@@ -55,6 +63,16 @@ function setup() {
         },
         err => console.log(err)
     );
+
+    textInput = createInput('');
+    textInput.id("textInput");
+    textInput.input((e) => {
+        if (fieldFocus && e.data)
+            document.getElementById('textInput').addEventListener("keydown", () => {
+                fieldFocus.input(e);
+            });
+        console.log(e)
+    })
 }
 
 function draw() {
@@ -76,14 +94,17 @@ function draw() {
             buttons.resetBoard.color = color(colors.red);
             buttons.resetBoard.draw(width / 2 - 62.5, height - marginY / 2 + 5 - 17.5, 125, 35)
             translate(marginX, marginY)
+
             if (player.view == board.sides[1].name) {
                 push();
                 translate(width - marginX * 2, height - marginY * 2);
                 rotate(PI);
             }
+
             board.drawBoard();
             mouseGrid();
             board.drawPieces();
+
             if (player.selectedPiece)
                 player.selectedPiece.showAvailableMoves();
 
@@ -119,134 +140,23 @@ function draw() {
                 }
             }
 
+            if (checkMate) {
+                drawCheckMate();
+            }
 
             if (promotion) {
-                push();
-                translate(-marginX, -marginY);
-                if (player.view == board.sides[1].name) {
-                    push();
-                    translate(width, height);
-                    rotate(PI);
-                }
-
-                fill(0, 0, 0, 175)
-                noStroke();
-                rect(0, 0, width, height);
-
-                let iconW = squareSize;
-                let iconH = squareSize * 1.25;
-
-                buttons.promote.queen.draw(width / 2 - iconW * 3.5, height / 2 - iconH / 2, iconW, iconH);
-                buttons.promote.rook.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
-                buttons.promote.bishop.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
-                buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH);
-
-                pop();
+                drawPromotion();
             }
 
             if (player.view == board.sides[1].name) {
                 pop();
             }
+
             pop();
-        } else {
-            if (board.sides.length == 2) {
-                push();
 
-                fill(255);
-                noStroke();
-                textSize(30);
-                textAlign(CENTER, TOP);
-                text("Choose a side:", width / 2, height / 2 - squareSize * 1.5);
-
-                let iconW = squareSize;
-                let iconH = squareSize * 1.25;
-
-
-                // if (checkPlayerByName(board.sides[0].name) == false) {
-                buttons.selectWhite.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
-                // }
-
-                // if (checkPlayerByName(board.sides[1].name) == false) {
-                buttons.selectBlack.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
-                // }
-
-                pop();
-            }
-
+        } else if (board.sides.length == 2) {
+            drawSideSelect();
         }
-    }
-
-    if (checkMate) {
-        push();
-        fill(0, 0, 0, 175)
-        noStroke();
-        rect(0, 0, width, height);
-        fill(255);
-        textSize(30);
-        textAlign(CENTER, CENTER);
-        text(`CHECKMATE`, width / 2, height / 2 - 30);
-        textSize(20);
-        text(`${board.check.side.enemy.name} is victorious!`, width / 2, height / 2 + 30);
-        buttons.resetBoard.color = lighten(color(colors.red), 0.25);
-        buttons.resetBoard.draw(width / 2 - 62.5, height - 75, 125, 35)
-        pop();
-    }
-}
-
-
-// Input Events
-function mousePressed() {
-    if (!checkMate && !promotion) {
-        if (player.side) {
-            buttons.resetBoard.catchClick(resetBoard);
-
-            if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && !checkMate) {
-                if (player.side && board.turn.name == player.side.name) {
-                    let selection = player.selectedPiece;
-                    selectPieceAtMouse();
-                    if (selection && selection.moves.length)
-                        selection.moveTo(player.gridMouse.x, player.gridMouse.y);
-                }
-            }
-        } else {
-            buttons.selectWhite.catchClick(() => {
-                player.side = board.sides[0];
-                player.view = board.sides[0].name;
-                board.active = true;
-                setPlayerActivity(true);
-            });
-
-            buttons.selectBlack.catchClick(() => {
-                player.side = board.sides[1];
-                player.view = board.sides[1].name;
-                board.active = true;
-                setPlayerActivity(true);
-            });
-        }
-    } else if (promotion) {
-        console.log("PROMOTION CLICK")
-        buttons.promote.queen.catchClick(() => { promote(promotion, QUEEN) })
-        buttons.promote.rook.catchClick(() => { promote(promotion, ROOK) })
-        buttons.promote.bishop.catchClick(() => { promote(promotion, BISHOP) })
-        buttons.promote.knight.catchClick(() => { promote(promotion, KNIGHT) })
-
-    } else {
-        buttons.resetBoard.catchClick(resetBoard);
-    }
-}
-
-function mouseClicked() {
-}
-
-function mouseReleased() {
-}
-
-function keyPressed() {
-    if (keyCode == 32) {
-        changeView();
-    }
-    if (keyCode == 27) {
-        resetBoard();
     }
 }
 
@@ -419,7 +329,10 @@ function setAllActivity(bool) {
 // // Remove player when closing the window/refreshing
 window.addEventListener('beforeunload', playerLeave);
 // Remove player when window loses focus (mobile OR desktop)
-window.addEventListener('blur', playerLeave);
+window.addEventListener('blur', () => {
+    playerLeave();
+    fieldFocus = null;
+});
 // Re-add player when window regains focus
 window.addEventListener('focus', playerReturn);
 
@@ -486,4 +399,71 @@ function setGlyph(type) {
         case KING:
             return glyphs.king;
     }
+}
+
+function drawSideSelect() {
+    push();
+
+    fill(255);
+    noStroke();
+    textSize(30);
+    textAlign(CENTER, TOP);
+    text("Choose a side:", width / 2, height / 2 - squareSize * 1.5);
+
+    let iconW = squareSize;
+    let iconH = squareSize * 1.25;
+
+
+    // if (checkPlayerByName(board.sides[0].name) == false) {
+    buttons.selectWhite.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
+    // }
+
+    // if (checkPlayerByName(board.sides[1].name) == false) {
+    buttons.selectBlack.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
+    // }
+
+    textSize(18);
+    textFields.newGame.draw(100, 100, 208);
+
+    pop();
+}
+
+function drawCheckMate() {
+    push();
+    fill(0, 0, 0, 175)
+    noStroke();
+    rect(0, 0, width, height);
+    fill(255);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    text(`CHECKMATE`, width / 2, height / 2 - 30);
+    textSize(20);
+    text(`${board.check.side.enemy.name} is victorious!`, width / 2, height / 2 + 30);
+    buttons.resetBoard.color = lighten(color(colors.red), 0.25);
+    buttons.resetBoard.draw(width / 2 - 62.5, height - 75, 125, 35)
+    pop();
+}
+
+function drawPromotion() {
+    push();
+    translate(-marginX, -marginY);
+    if (player.view == board.sides[1].name) {
+        push();
+        translate(width, height);
+        rotate(PI);
+    }
+
+    fill(0, 0, 0, 175)
+    noStroke();
+    rect(0, 0, width, height);
+
+    let iconW = squareSize;
+    let iconH = squareSize * 1.25;
+
+    buttons.promote.queen.draw(width / 2 - iconW * 3.5, height / 2 - iconH / 2, iconW, iconH);
+    buttons.promote.rook.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
+    buttons.promote.bishop.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
+    buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH);
+
+    pop();
 }
