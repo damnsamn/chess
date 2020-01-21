@@ -31,29 +31,58 @@ class Button {
     }
 
     hover() {
-        if (mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height)
-            return true;
-        else
-            return false;
+        return (mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height);
     }
 }
 
 var buttons = {
+    newGame: new Button((x, y, self) => {
+        let labelSize = mobile ? 12 : 16;
+        textSize(labelSize);
+        fill(colors.blue);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        text("NEW GAME", self.width / 2, self.height / 2 - labelSize / 4);
+    }),
+    newGameConfirm: new Button((x, y, self) => {
+        let labelSize = mobile ? 12 : 16;
+        textSize(labelSize);
+        noStroke();
+        fill(darken(color(colors.blue), 0.8));
+        rect(x, y, self.width, self.height, 3);
+        fill(colors.white)
+        textAlign(CENTER, CENTER);
+        text("CONFIRM", self.width / 2, self.height / 2 - labelSize / 4);
+    }),
+    gameListRefresh: new Button((x, y, self) => {
+        setupGlyphStyle(self.width);
+        fill(colors.white);
+        text(glyphs.refresh, self.width / 2, self.height / 2);
+    }),
     selectWhite: new Button((x, y, self) => {
         setupGlyphStyle(squareSize);
-        fill(board.sides[0].color);
-        stroke(board.sides[1].color);
+        fill(colors.white);
+        stroke(colors.black);
         text(glyphs.king, self.width / 2, self.height / 2);
     }),
     selectBlack: new Button((x, y, self) => {
         setupGlyphStyle(squareSize);
-        fill(board.sides[1].color);
-        stroke(board.sides[0].color);
+        fill(colors.black);
+        stroke(colors.white);
         text(glyphs.king, self.width / 2, self.height / 2);
+    }),
+    endGame: new Button((x, y, self) => {
+        textSize(mobile ? 12 : 16);
+        noStroke();
+        fill(colors.red);
+        rect(x, y, self.width, self.height, 3);
+        fill(colors.white)
+        textAlign(CENTER, CENTER);
+        text("END GAME", self.width / 2, self.height / 2 - 16 / 4);
     }),
     resetBoard: new Button((x, y, self) => {
         textSize(mobile ? 12 : 16);
-        fill(self.color);
+        fill(colors.red);
         noStroke();
         textAlign(CENTER, CENTER);
         text("RESET BOARD", self.width / 2, self.height / 2 - 16 / 4);

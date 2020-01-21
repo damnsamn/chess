@@ -65,8 +65,7 @@ class Piece {
     }
 
     getKing() {
-        let kings = getPiecesOfType(KING)
-        for (let king of kings)
+        for (let king of getPiecesOfType(KING))
             if (king.side.name == this.side.name)
                 return king;
     }
@@ -293,8 +292,7 @@ class Piece {
             if (legal) {
                 return { x: target.position.index.x, y: target.position.index.y }
             }
-            else
-                return false;
+            else return false;
         }
         else return false;
     }
@@ -307,11 +305,13 @@ class Piece {
 
         let kingMove = king.beginMove(king.position.index.x + inc * (abs(diffX) - 1), king.position.index.y);
         let rookMove = rook.beginMove(rook.position.index.x - inc * (abs(diffX) - 1), rook.position.index.y);
+
         board.lastMove = [];
         board.lastMove.push({ x: kingMove.original.x, y: kingMove.original.y })
         board.lastMove.push({ x: rookMove.original.x, y: rookMove.original.y })
         board.lastMove.push({ x: kingMove.destination.x, y: kingMove.destination.y })
         board.lastMove.push({ x: rookMove.destination.x, y: rookMove.destination.y })
+
         king.moved = false;
         rook.moved = true;
 

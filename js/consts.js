@@ -40,4 +40,5 @@ const glyphs = {
     bishop: "\u{F43A}",
     queen: "\u{F445}",
     king: "\u{F43F}",
+    refresh: "\u{F2F1}"
 }
