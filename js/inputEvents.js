@@ -37,12 +37,8 @@ function mousePressed() {
             board.active = true;
             setPlayerActivity(true);
         });
-        textFields.newGame.catchClick((field) => {
-            console.log(field)
-            fieldFocus = field;
-            let el = document.getElementById('textInput');
-            document.getElementById('textInput').focus();
-        })
+        textFields.newGame.catchClick();
+        textFields.test.catchClick();
     }
 
     // Promotion
@@ -63,7 +59,7 @@ function mousePressed() {
 
 function mouseClicked() {
     if (fieldFocus)
-        document.getElementById('textInput').focus()
+        document.getElementById('textInput').focus();
 }
 
 function mouseReleased() {

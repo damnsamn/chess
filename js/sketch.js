@@ -17,7 +17,7 @@ var checkBreakers = [];
 var activity = {};
 var promotion = false;
 var fieldFocus = null;
-var textInput;
+var textInput, textInputEl;
 
 initialiseBoard();
 
@@ -64,15 +64,7 @@ function setup() {
         err => console.log(err)
     );
 
-    textInput = createInput('');
-    textInput.id("textInput");
-    textInput.input((e) => {
-        if (fieldFocus && e.data)
-            document.getElementById('textInput').addEventListener("keydown", () => {
-                fieldFocus.input(e);
-            });
-        console.log(e)
-    })
+    initTextField();
 }
 
 function draw() {
@@ -423,7 +415,8 @@ function drawSideSelect() {
     // }
 
     textSize(18);
-    textFields.newGame.draw(100, 100, 208);
+    textFields.newGame.draw(100, 100, 200);
+    textFields.test.draw(100, 200, 500);
 
     pop();
 }
@@ -466,4 +459,19 @@ function drawPromotion() {
     buttons.promote.knight.draw(width / 2 + iconW * 2.5, height / 2 - iconH / 2, iconW, iconH);
 
     pop();
+}
+
+function initTextField() {
+
+    textInput = createInput('');
+    textInput.id("textInput");
+
+    textInputEl = document.getElementById('textInput');
+    textInputEl.addEventListener("input", (e) => {
+        console.log(e);
+        fieldFocus.input(e);
+    });
+    textInputEl.addEventListener("keydown", (e) => {
+        e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+    });
 }

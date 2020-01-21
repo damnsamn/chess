@@ -3,12 +3,15 @@ class TextField {
     constructor(label) {
         this.label = label;
         this.width = 0;
-        this.value = "This is a value";
+        this.value = "";
     }
 
-    catchClick(func) {
+    catchClick(func = null) {
         if (this.hover()) {
-            func(this);
+            fieldFocus = this;
+            textInputEl.value = this.value;
+            if (func)
+                func(this);
         }
     }
 
@@ -25,7 +28,7 @@ class TextField {
 
         this.maxChars = round(this.fieldW / (valueSize * 0.75)) + 1;
 
-        let textBlink = fieldFocus == this && frameCount % 60 < 30 || keyIsPressed ? "_" : "";
+        let textBlink = fieldFocus == this && (frameCount % 60 < 30 || keyIsPressed) ? "_" : "";
 
         push();
         translate(x, y);
@@ -68,21 +71,11 @@ class TextField {
     }
 
     input(e) {
-
-        // TODO: FIX THIS
-        if (e.data) {
-            console.log(`fieldFocus.value.length <= fieldFocus.maxChars: ${fieldFocus.value.length} <= ${fieldFocus.maxChars}`)
-            if (fieldFocus.value.length <= fieldFocus.maxChars) {
-                fieldFocus.value = fieldFocus.value + e.data;
-            }
-        }
-
-        if (e.key == "Backspace") {
-            fieldFocus.value.slice(0, -1);
-        }
+        this.value = textInputEl.value;
     }
 }
 
 var textFields = {
-    newGame: new TextField("Help")
+    newGame: new TextField("Help"),
+    test: new TextField("Testes, Testes. One 2 ThR33"),
 }
