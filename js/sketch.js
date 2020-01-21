@@ -35,29 +35,6 @@ function setup() {
 
 
     initialiseBoard();
-    document.addEventListener("gameloaded", () => {
-        boardData.on('value',
-            data => {
-                if (data.val() && !checkMate) {
-                    console.table('Incoming boardData:');
-                    console.log(data.val());
-                    board.updateData(data.val());
-                }
-            },
-            err => console.log(err)
-        );
-
-        activityData.on('value',
-            data => {
-                if (data.val()) {
-                    console.table('Incoming Activity:');
-                    console.log(data.val());
-                    activity = data.val();
-                }
-            },
-            err => console.log(err)
-        );
-    })
 
     initTextField();
     getAllGames();
@@ -428,7 +405,6 @@ function drawSideSelect() {
 }
 
 function drawGame() {
-    buttons.resetBoard.color = color(colors.red);
     buttons.resetBoard.draw(width / 2 - 62.5, height - marginY / 2 + 5 - 17.5, 125, 35)
     translate(marginX, marginY)
 
@@ -480,6 +456,14 @@ function drawGame() {
 
 function drawCheckMate() {
     push();
+    translate(-marginX, -marginY);
+    if (player.view == board.sides[1].name) {
+        push();
+        translate(width, height);
+        rotate(PI);
+    }
+
+
     fill(0, 0, 0, 175)
     noStroke();
     rect(0, 0, width, height);
@@ -489,8 +473,7 @@ function drawCheckMate() {
     text(`CHECKMATE`, width / 2, height / 2 - 30);
     textSize(20);
     text(`${board.check.side.enemy.name} is victorious!`, width / 2, height / 2 + 30);
-    buttons.resetBoard.color = lighten(color(colors.red), 0.25);
-    buttons.resetBoard.draw(width / 2 - 62.5, height - 75, 125, 35)
+    buttons.endGame.draw(width / 2 - 62.5, height - 75, 125, 35)
     pop();
 }
 
@@ -528,7 +511,4 @@ function initTextField() {
         console.log(e);
         fieldFocus.input(e);
     });
-    // textInputEl.addEventListener("keydown", (e) => {
-    //     e.target.setSelectionRange(e.target.value.length, e.target.value.length);
-    // });
 }

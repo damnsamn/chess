@@ -83,8 +83,6 @@ function newGame(gameName) {
 }
 
 function joinGame(gameKey) {
-    // getAllGames();
-
     let gameExists = false;
 
     for ([key, value] of Object.entries(allGames))
@@ -96,9 +94,57 @@ function joinGame(gameKey) {
             activityData = firebase.database().ref(`${gameKey}/activity`);
 
             loadedGame = value;
+            document.addEventListener("gameloaded", bindDatabaseListeners);
             document.dispatchEvent(gameLoadedEvent);
         }
 
     if (gameExists == false)
         console.error(`Game "${gameKey}" does not exist. Please refresh and try again`)
+}
+
+function endGame(gameKey = null) {
+
+    if (gameKey)
+        firebase.database().ref(gameKey).remove();
+    else {
+        gameData.remove();
+    }
+    boardData = null;
+    activityData = null;
+    document.removeEventListener("gameloaded", bindDatabaseListeners);
+
+    initialiseBoard();
+    loadedGame = null;
+    player.side = null;
+    promotion = false;
+    checkMate = false;
+    noLoop();
+    loop();
+    getAllGames();
+
+    console.log("Game ended")
+}
+
+function bindDatabaseListeners() {
+    boardData.on('value',
+        data => {
+            if (data.val() && !checkMate) {
+                console.table('Incoming boardData:');
+                console.log(data.val());
+                board.updateData(data.val());
+            }
+        },
+        err => console.log(err)
+    );
+
+    activityData.on('value',
+        data => {
+            if (data.val()) {
+                console.table('Incoming Activity:');
+                console.log(data.val());
+                activity = data.val();
+            }
+        },
+        err => console.log(err)
+    );
 }

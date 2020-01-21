@@ -71,9 +71,18 @@ var buttons = {
         stroke(colors.white);
         text(glyphs.king, self.width / 2, self.height / 2);
     }),
+    endGame: new Button((x, y, self) => {
+        textSize(mobile ? 12 : 16);
+        noStroke();
+        fill(colors.red);
+        rect(x, y, self.width, self.height, 3);
+        fill(colors.white)
+        textAlign(CENTER, CENTER);
+        text("END GAME", self.width / 2, self.height / 2 - 16 / 4);
+    }),
     resetBoard: new Button((x, y, self) => {
         textSize(mobile ? 12 : 16);
-        fill(self.color);
+        fill(colors.red);
         noStroke();
         textAlign(CENTER, CENTER);
         text("RESET BOARD", self.width / 2, self.height / 2 - 16 / 4);

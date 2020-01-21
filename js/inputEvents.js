@@ -88,7 +88,7 @@ function mousePressed() {
 
     // Checkmate
     if (screenCheckMate) {
-        buttons.resetBoard.catchClick(resetBoard);
+        buttons.endGame.catchClick(endGame);
     }
 }
 
