@@ -5,6 +5,8 @@ function mousePressed() {
     let screenPromotion = player.side && promotion;
     let screenSideSelect = !player.side;
     let screenGamePlay = player.side && !promotion && !checkMate;
+    let screenGameSelect = !loadedGame && !startingNewGame;
+    let screenNewGame = !loadedGame && startingNewGame;
 
     fieldFocus = null;
 
@@ -21,6 +23,39 @@ function mousePressed() {
             }
         }
     }
+    // Game Selection
+    if (screenGameSelect) {
+        let i = 0;
+        for ([key, value] of Object.entries(allGames))
+            if (key.includes("game")) {
+                let game = allGames[key];
+                if (game.button)
+                    game.button.catchClick(() => joinGame(key))
+                i++;
+            }
+
+        buttons.newGame.catchClick(() => {
+            startingNewGame = true;
+        });
+
+        buttons.gameListRefresh.catchClick(() => {
+            getAllGames();
+        });
+    }
+
+    if (screenNewGame) {
+        textFields.newGame.catchClick();
+
+        buttons.newGameConfirm.catchClick(() => {
+            let fieldVal = textFields.newGame.value;
+            if (fieldVal) {
+                newGame(fieldVal);
+                startingNewGame = false;
+            } else {
+                alert("Please enter a game title")
+            }
+        });
+    }
 
     // Side Selection
     if (screenSideSelect) {
@@ -29,6 +64,7 @@ function mousePressed() {
             player.view = board.sides[0].name;
             board.active = true;
             setPlayerActivity(true);
+            // initialiseBoard();
         });
 
         buttons.selectBlack.catchClick(() => {
@@ -36,9 +72,8 @@ function mousePressed() {
             player.view = board.sides[1].name;
             board.active = true;
             setPlayerActivity(true);
+            // initialiseBoard();
         });
-        textFields.newGame.catchClick();
-        textFields.test.catchClick();
     }
 
     // Promotion

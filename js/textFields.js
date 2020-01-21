@@ -76,6 +76,5 @@ class TextField {
 }
 
 var textFields = {
-    newGame: new TextField("Help"),
-    test: new TextField("Testes, Testes. One 2 ThR33"),
+    newGame: new TextField("Game Title"),
 }

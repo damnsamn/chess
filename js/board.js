@@ -1,7 +1,6 @@
 class Board {
     constructor(isFirstMove = false) {
         this.active = false;
-        this.players = [];
         this.sides = [];
         this.turn = Null;
         this.state = [
@@ -105,7 +104,10 @@ class Board {
         textStyle(BOLD);
         textAlign(CENTER, CENTER);
         fill(board.sides[0].color);
-        text(`Current turn: ${board.turn.name}`, boardSize / 2, -marginY / 1.5);
+        textSize(!mobile ? 18 : 14);
+        text(loadedGame.name, boardSize / 2, -marginY / 1.25);
+        textSize(!mobile ? 14 : 10);
+        text(`Current turn: ${board.turn.name}`, boardSize / 2, -marginY / 2);
 
         let statusIconSize = 16;
         let circleSize = 12;
@@ -162,7 +164,11 @@ class Board {
             this.sides[0].createEnemy(this.sides[1]);
             this.sides[1].createEnemy(this.sides[0]);
             this.turn = this.sides[0];
-            bg = this.sides[1].color;
+
+            colors.white = this.sides[0].color;
+            colors.black = this.sides[1].color;
+
+            bg = colors.black;
         }
 
     }

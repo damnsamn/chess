@@ -1,6 +1,5 @@
 var canvas;
 var bg = null;
-var colors = {};
 var player = {
     side: null,
     gridMouse: {},
@@ -11,15 +10,19 @@ var loaded;
 var incomingData;
 var board;
 var fontIcon, fontText;
-var players = [];
 var checkMate = false;
 var checkBreakers = [];
 var activity = {};
 var promotion = false;
 var fieldFocus = null;
 var textInput, textInputEl;
+var startingNewGame = false;
 
-initialiseBoard();
+var colors = {
+    red: "#bd2d2d",
+    blue: "#43ace6",
+    green: "#4a962c"
+}
 
 function preload() {
     fontIcon = loadFont(iconFontPath);
@@ -28,43 +31,36 @@ function preload() {
 
 function setup() {
     canvas = createCanvas(w, h);
-
-    colors = {
-        red: "#bd2d2d",
-        blue: "#43ace6",
-        green: "#4a962c"
-    }
     textFont(fontText);
 
-    boardData.on('value',
-        data => {
-            if (data.val() && !checkMate) {
-                console.table('Incoming boardData:');
-                console.log(data.val());
-                board.updateData(data.val());
-                loaded = true;
-            }
-            else if (!data.val()) {
-                newGame("test");
-                initialiseBoard();
-                loaded = true;
-            }
-        },
-        err => console.log(err)
-    );
 
-    activityData.on('value',
-        data => {
-            if (data.val()) {
-                console.table('Incoming Activity:');
-                console.log(data.val());
-                activity = data.val();
-            }
-        },
-        err => console.log(err)
-    );
+    initialiseBoard();
+    document.addEventListener("gameloaded", () => {
+        boardData.on('value',
+            data => {
+                if (data.val() && !checkMate) {
+                    console.table('Incoming boardData:');
+                    console.log(data.val());
+                    board.updateData(data.val());
+                }
+            },
+            err => console.log(err)
+        );
+
+        activityData.on('value',
+            data => {
+                if (data.val()) {
+                    console.table('Incoming Activity:');
+                    console.log(data.val());
+                    activity = data.val();
+                }
+            },
+            err => console.log(err)
+        );
+    })
 
     initTextField();
+    getAllGames();
 }
 
 function draw() {
@@ -81,56 +77,20 @@ function draw() {
 
     if (loaded) {
 
-        if (player.side) {
+        if (!loadedGame) {
+            drawGameSelect();
+
+            if (startingNewGame)
+                drawNewGame();
+        }
+
+        else if (!player.side && board.sides.length == 2) {
+            drawSideSelect();
+
+        } else {
             push();
-            buttons.resetBoard.color = color(colors.red);
-            buttons.resetBoard.draw(width / 2 - 62.5, height - marginY / 2 + 5 - 17.5, 125, 35)
-            translate(marginX, marginY)
 
-            if (player.view == board.sides[1].name) {
-                push();
-                translate(width - marginX * 2, height - marginY * 2);
-                rotate(PI);
-            }
-
-            board.drawBoard();
-            mouseGrid();
-            board.drawPieces();
-
-            if (player.selectedPiece)
-                player.selectedPiece.showAvailableMoves();
-
-            if (!mobile) {
-                let x = 0;
-                let increment = 1;
-                for (let side of board.sides) {
-                    let y = 0;
-                    push();
-                    if (x == 0) {
-                        translate(0, -marginY / 1.5);
-                        textAlign(LEFT, CENTER);
-                    } else {
-                        translate(boardSize, -marginY / 1.5)
-                        textAlign(RIGHT, CENTER);
-                        increment *= -1;
-                    }
-                    if (player.view == board.sides[1].name) {
-                        increment *= -1;
-                        rotate(PI);
-                        translate(0, -height + marginY / 1.5);
-                    }
-                    setupGlyphStyle(20);
-                    strokeWeight(3);
-                    for (let piece of side.graveyard) {
-                        fill(side.enemy.color);
-                        stroke(side.color);
-                        text(setGlyph(piece), y * 15, 0);
-                        y += increment;
-                    }
-                    pop();
-                    x++;
-                }
-            }
+            drawGame();
 
             if (checkMate) {
                 drawCheckMate();
@@ -146,8 +106,6 @@ function draw() {
 
             pop();
 
-        } else if (board.sides.length == 2) {
-            drawSideSelect();
         }
     }
 }
@@ -375,7 +333,6 @@ function promote(piece, target) {
 }
 
 
-
 function setGlyph(type) {
     switch (type) {
         case PAWN:
@@ -393,32 +350,125 @@ function setGlyph(type) {
     }
 }
 
+function drawGameSelect() {
+    push();
+
+    let headingSize = !mobile ? 24 : 18;
+    let nameSize = !mobile ? 18 : 14;
+    let itemHeight = !mobile ? 50 : 30;
+    let itemMargin = !mobile ? 25 : 10;
+
+
+    noStroke();
+    fill(colors.white);
+    textSize(headingSize);
+    textAlign(LEFT, TOP)
+    text("Join a game:", marginX, marginY / 2);
+    buttons.gameListRefresh.draw(width - marginX - headingSize, marginY / 2 + headingSize / 4, headingSize)
+    let i = 0;
+    for ([key, value] of Object.entries(allGames))
+        if (key.includes("game")) {
+            let game = allGames[key];
+            if (!game.button)
+                game.button = new Button((x, y, self) => {
+                    rect(x, y, self.width, self.height, 3);
+
+                    fill(colors.black);
+                    textAlign(LEFT, CENTER)
+                    textSize(nameSize)
+                    text(game.name, 15, self.height / 2 - nameSize / 8);
+                })
+            game.button.draw(marginX, marginY / 2 + itemHeight + ((i) * (itemHeight + itemMargin)), boardSize, itemHeight);
+            i++;
+        }
+    buttons.newGame.draw(width / 2 - 125 / 2, boardSize + marginY * 1.25, 125, 35)
+
+    pop();
+}
+
+function drawNewGame() {
+    push();
+    fill(0, 0, 0, 200)
+    noStroke();
+    rect(0, 0, width, height);
+    fill(255);
+
+    textSize(18);
+    textFields.newGame.draw(width / 2 - boardSize / 2, height / 2 - 50, boardSize);
+
+    buttons.newGameConfirm.draw(width / 2 - 125 / 2, height / 2 + 50, 125, 35)
+    pop();
+}
+
 function drawSideSelect() {
     push();
 
-    fill(255);
+    fill(colors.white);
     noStroke();
-    textSize(30);
+    textSize(!mobile ? 30 : 26);
     textAlign(CENTER, TOP);
-    text("Choose a side:", width / 2, height / 2 - squareSize * 1.5);
+    text(`Joining game:${mobile ? "\u{000D}\u{000A}" : " "}${loadedGame.name}`, width / 2, marginY);
+    textSize(!mobile ? 24 : 20);
+    text("Who do you serve?", width / 2, height / 2 - squareSize * 1.5);
 
     let iconW = squareSize;
     let iconH = squareSize * 1.25;
 
-
-    // if (checkPlayerByName(board.sides[0].name) == false) {
     buttons.selectWhite.draw(width / 2 - iconW * 1.5, height / 2 - iconH / 2, iconW, iconH);
-    // }
-
-    // if (checkPlayerByName(board.sides[1].name) == false) {
     buttons.selectBlack.draw(width / 2 + iconW * 0.5, height / 2 - iconH / 2, iconW, iconH);
-    // }
-
-    textSize(18);
-    textFields.newGame.draw(100, 100, 200);
-    textFields.test.draw(100, 200, 500);
 
     pop();
+}
+
+function drawGame() {
+    buttons.resetBoard.color = color(colors.red);
+    buttons.resetBoard.draw(width / 2 - 62.5, height - marginY / 2 + 5 - 17.5, 125, 35)
+    translate(marginX, marginY)
+
+    if (player.view == board.sides[1].name) {
+        push();
+        translate(width - marginX * 2, height - marginY * 2);
+        rotate(PI);
+    }
+
+    board.drawBoard();
+    mouseGrid();
+    board.drawPieces();
+
+    if (player.selectedPiece)
+        player.selectedPiece.showAvailableMoves();
+
+    if (!mobile) {
+        let x = 0;
+        let increment = 1;
+        for (let side of board.sides) {
+            let y = 0;
+            push();
+            if (x == 0) {
+                translate(0, -marginY / 1.5);
+                textAlign(LEFT, CENTER);
+            } else {
+                translate(boardSize, -marginY / 1.5)
+                textAlign(RIGHT, CENTER);
+                increment *= -1;
+            }
+            if (player.view == board.sides[1].name) {
+                increment *= -1;
+                rotate(PI);
+                translate(0, -height + marginY / 1.5);
+            }
+            setupGlyphStyle(20);
+            strokeWeight(3);
+            for (let piece of side.graveyard) {
+                fill(side.enemy.color);
+                stroke(side.color);
+                text(setGlyph(piece), y * 15, 0);
+                y += increment;
+            }
+            pop();
+            x++;
+        }
+    }
 }
 
 function drawCheckMate() {
