@@ -365,22 +365,29 @@ function drawGameSelect() {
     textAlign(LEFT, TOP)
     text("Join a game:", marginX, marginY / 2);
     buttons.gameListRefresh.draw(width - marginX - headingSize, marginY / 2 + headingSize / 4, headingSize)
-    let i = 0;
-    for ([key, value] of Object.entries(allGames))
-        if (key.includes("game")) {
-            let game = allGames[key];
-            if (!game.button)
-                game.button = new Button((x, y, self) => {
-                    rect(x, y, self.width, self.height, 3);
+    if (allGames.length) {
+        let i = 0;
+        for ([key, value] of Object.entries(allGames))
+            if (key.includes("game")) {
+                let game = allGames[key];
+                if (!game.button)
+                    game.button = new Button((x, y, self) => {
+                        rect(x, y, self.width, self.height, 3);
 
-                    fill(colors.black);
-                    textAlign(LEFT, CENTER)
-                    textSize(nameSize)
-                    text(game.name, 15, self.height / 2 - nameSize / 8);
-                })
-            game.button.draw(marginX, marginY / 2 + itemHeight + ((i) * (itemHeight + itemMargin)), boardSize, itemHeight);
-            i++;
-        }
+                        fill(colors.black);
+                        textAlign(LEFT, CENTER)
+                        textSize(nameSize)
+                        text(game.name, 15, self.height / 2 - nameSize / 8);
+                    })
+                game.button.draw(marginX, marginY / 2 + itemHeight + ((i) * (itemHeight + itemMargin)), boardSize, itemHeight);
+                i++;
+            }
+    } else {
+        fill(darken(color(colors.white), 0.5));
+        textAlign(CENTER, CENTER);
+        textSize(nameSize);
+        text("There are currently no games in progress", width / 2, height / 2)
+    }
     buttons.newGame.draw(width / 2 - 125 / 2, boardSize + marginY * 1.25, 125, 35)
 
     pop();
@@ -407,7 +414,7 @@ function drawSideSelect() {
     noStroke();
     textSize(!mobile ? 30 : 26);
     textAlign(CENTER, TOP);
-    text(`Joining game:${mobile ? "\u{000D}\u{000A}" : " "}${loadedGame.name}`, width / 2, marginY);
+    text(`Joining game:\u{000D}\u{000A}${loadedGame.name}`, width / 2, marginY);
     textSize(!mobile ? 24 : 20);
     text("Who do you serve?", width / 2, height / 2 - squareSize * 1.5);
 
@@ -521,7 +528,7 @@ function initTextField() {
         console.log(e);
         fieldFocus.input(e);
     });
-    textInputEl.addEventListener("keydown", (e) => {
-        e.target.setSelectionRange(e.target.value.length, e.target.value.length);
-    });
+    // textInputEl.addEventListener("keydown", (e) => {
+    //     e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+    // });
 }

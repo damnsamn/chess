@@ -26,7 +26,7 @@ class TextField {
         this.fieldH = textSize() * 2;
         let valueSize = textSize() * 0.8;
 
-        this.maxChars = round(this.fieldW / (valueSize * 0.75)) + 1;
+        this.maxChars = round(this.fieldW / (valueSize * 0.6) - 3);
 
         let textBlink = fieldFocus == this && (frameCount % 60 < 30 || keyIsPressed) ? "_" : "";
 
@@ -50,7 +50,7 @@ class TextField {
         textSize(valueSize);
         fill(darken(focusColor, 0.7));
         noStroke();
-        text(this.value + textBlink, textSize() / 1.5, this.fieldH / 2.25);
+        text(this.value + textBlink, valueSize, this.fieldH / 2.25);
 
 
         pop();
@@ -72,6 +72,8 @@ class TextField {
 
     input(e) {
         this.value = textInputEl.value;
+        this.value = this.value.slice(0, this.maxChars);
+        textInputEl.value = this.value;
     }
 }
 

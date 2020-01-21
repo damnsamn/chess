@@ -23,7 +23,10 @@ function getAllGames(dataObj = null) {
     allGames = {};
     function transformData(d) {
         if (d.val()) {
+            let i = 0;
             for ([key1, value1] of Object.entries(d.val())) {
+                if (key1 != "temp")
+                    i++
                 allGames[key1] = {};
                 for ([key2, value2] of Object.entries(value1))
                     switch (key2) {
@@ -32,6 +35,7 @@ function getAllGames(dataObj = null) {
                             break;
                     }
             }
+            allGames.length = i;
             console.log("allGames updated");
         }
     }
