@@ -42,7 +42,7 @@ function getAllGames(dataObj = null) {
     }
 
     if (!dataObj)
-    appData.once('value', data => {
+        appData.once('value', data => {
             transformData(data);
         })
     else transformData(dataObj);
@@ -69,14 +69,12 @@ function newGame(gameName) {
             }
 
 
-            if (data.val()) {
-                getAllGames(data);
+            getAllGames(data);
 
-                let i = 1;
-                incrementGame(allGames, i);
+            let i = 1;
+            incrementGame(allGames, i);
 
-                console.log(gameData.key);
-            }
+            console.log(gameData.key);
 
         },
         err => console.log(err)
@@ -106,7 +104,7 @@ function joinGame(gameKey) {
 function endGame(gameKey = null) {
 
     if (gameKey)
-    appData.child(gameKey).remove();
+        appData.child(gameKey).remove();
     else {
         gameData.remove();
     }

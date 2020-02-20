@@ -29,8 +29,17 @@ function mousePressed() {
         for ([key, value] of Object.entries(allGames))
             if (key.includes("game")) {
                 let game = allGames[key];
-                if (game.button)
-                    game.button.catchClick(() => joinGame(key))
+                let gameEnding = false;
+
+                if (game.deleteButton)
+                    game.deleteButton.catchClick(() => {
+                        gameEnding = true;
+                        endGame(key);
+                    });
+
+                if (game.button && !gameEnding)
+                    game.button.catchClick(() => joinGame(key), 1)
+
                 i++;
             }
 

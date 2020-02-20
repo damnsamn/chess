@@ -356,7 +356,22 @@ function drawGameSelect() {
                         textSize(nameSize)
                         text(game.name, 15, self.height / 2 - nameSize / 8);
                     })
-                game.button.draw(marginX, marginY / 2 + itemHeight + ((i) * (itemHeight + itemMargin)), boardSize, itemHeight);
+
+                if (!game.deleteButton)
+                    game.deleteButton = new Button((x, y, self) => {
+                        let c = color(colors.red);
+                        c.setAlpha(150);
+                        fill(c);
+                        noStroke();
+                        setupGlyphStyle(self.width);
+                        textAlign(CENTER, CENTER);
+                        text(glyphs.delete, self.width / 2, self.height / 2);
+                    })
+                let y = marginY / 2 + itemHeight + ((i) * (itemHeight + itemMargin));
+                game.button.draw(marginX, y, boardSize, itemHeight);
+                let size = mobile ? 16 : 18;
+                game.deleteButton.draw(width - marginX - 30, y + itemHeight / 2 - size/2, size);
+
                 i++;
             }
     } else {
